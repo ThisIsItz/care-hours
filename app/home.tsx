@@ -1,17 +1,20 @@
 import {
   ActivityIndicator,
+  Alert,
   Pressable,
-  ScrollView,
   StyleSheet,
   Text,
   View
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
-import { FamilyMemberCard } from '@/src/components/FamilyMemberCard'
+import { AdminHome } from '@/src/components/home/AdminHome'
+import { FamilyHome } from '@/src/components/home/FamilyHome'
+import { WorkerHome } from '@/src/components/home/WorkerHome'
 import { useCurrentFamily } from '@/src/hooks/useCurrentFamily'
 import { useFamilyMembers } from '@/src/hooks/useFamilyMembers'
 import { supabase } from '@/src/lib/supabase'
+import { useQueryClient } from '@tanstack/react-query'
 import { router } from 'expo-router'
 
 export default function HomeScreen() {
@@ -21,6 +24,20 @@ export default function HomeScreen() {
     isLoading: areMembersLoading,
     error: membersError
   } = useFamilyMembers(Boolean(currentFamily))
+
+  const queryClient = useQueryClient()
+
+  async function handleSignOut() {
+    const { error } = await supabase.auth.signOut()
+
+    if (error) {
+      Alert.alert('No se pudo cerrar sesión', error.message)
+      return
+    }
+
+    queryClient.clear()
+    router.replace('/')
+  }
 
   if (isLoading) {
     return (
@@ -70,68 +87,38 @@ export default function HomeScreen() {
             <Text style={styles.secondaryButtonText}>Unirme a un grupo</Text>
           </Pressable>
 
-          <Pressable onPress={() => void supabase.auth.signOut()}>
-            <Text style={styles.signOutText}>Cerrar sesión</Text>
+          <Pressable
+            accessibilityRole="button"
+            style={styles.secondaryButton}
+            onPress={() => void handleSignOut()}
+          >
+            <Text style={styles.secondaryButtonText}>Cerrar sesión</Text>
           </Pressable>
         </View>
       </SafeAreaView>
     )
   }
 
-  return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView
-        contentContainerStyle={styles.dashboardContent}
-        showsVerticalScrollIndicator={false}
-      >
-        <View style={styles.header}>
-          <View>
-            <Text style={styles.title}>{currentFamily.family.name}</Text>
+  if (currentFamily.membership.role === 'admin') {
+    return (
+      <AdminHome
+        currentFamily={currentFamily}
+        members={members}
+        areMembersLoading={areMembersLoading}
+        membersError={membersError}
+        onInvitePress={() => router.navigate('/invite-member')}
+        onSignOut={() => void handleSignOut()}
+      />
+    )
+  }
 
-            <Text style={styles.subtitle}>
-              {members.length} {members.length === 1 ? 'miembro' : 'miembros'}
-            </Text>
-          </View>
+  if (currentFamily.membership.role === 'worker') {
+    return (
+      <WorkerHome currentFamily={currentFamily} onSignOut={() => void handleSignOut()} />
+    )
+  }
 
-          {currentFamily.membership.role === 'admin' ? (
-            <Pressable
-              style={styles.inviteButton}
-              onPress={() => router.navigate('/invite-member')}
-            >
-              <Text style={styles.inviteButtonText}>Invitar</Text>
-            </Pressable>
-          ) : null}
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Personas</Text>
-
-          {areMembersLoading ? <ActivityIndicator /> : null}
-
-          {membersError ? (
-            <Text style={styles.errorText}>
-              {membersError instanceof Error
-                ? membersError.message
-                : 'No se pudieron cargar los miembros.'}
-            </Text>
-          ) : null}
-
-          {!areMembersLoading &&
-            !membersError &&
-            members.map((member) => (
-              <FamilyMemberCard key={member.id} member={member} />
-            ))}
-        </View>
-
-        <Pressable
-          style={styles.secondaryButton}
-          onPress={() => void supabase.auth.signOut()}
-        >
-          <Text style={styles.secondaryButtonText}>Cerrar sesión</Text>
-        </Pressable>
-      </ScrollView>
-    </SafeAreaView>
-  )
+  return <FamilyHome currentFamily={currentFamily} onSignOut={() => void handleSignOut()} />
 }
 
 const styles = StyleSheet.create({
@@ -182,50 +169,5 @@ const styles = StyleSheet.create({
   secondaryButtonText: {
     fontSize: 18,
     fontWeight: '600'
-  },
-  signOutText: {
-    paddingVertical: 12,
-    textAlign: 'center',
-    textDecorationLine: 'underline'
-  },
-  dashboardContent: {
-    flexGrow: 1,
-    padding: 24,
-    gap: 28
-  },
-
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: 16
-  },
-
-  section: {
-    gap: 12
-  },
-
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: '700'
-  },
-
-  inviteButton: {
-    minHeight: 44,
-    justifyContent: 'center',
-    paddingHorizontal: 18,
-    borderRadius: 10,
-    backgroundColor: '#111111'
-  },
-
-  inviteButtonText: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: '600'
-  },
-
-  errorText: {
-    fontSize: 14,
-    color: '#b42318'
   }
 })
