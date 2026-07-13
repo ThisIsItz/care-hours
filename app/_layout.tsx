@@ -26,6 +26,27 @@ function RootNavigator() {
 
       <Stack.Protected guard={Boolean(session)}>
         <Stack.Screen name="home" />
+        <Stack.Screen
+          name="create-family"
+          options={{
+            headerShown: false,
+            presentation: 'card'
+          }}
+        />
+        <Stack.Screen
+          name="invite-member"
+          options={{
+            headerShown: true,
+            title: 'Invitar persona'
+          }}
+        />
+        <Stack.Screen
+          name="join-family"
+          options={{
+            headerShown: true,
+            title: 'Unirme a un grupo'
+          }}
+        />
       </Stack.Protected>
     </Stack>
   )
