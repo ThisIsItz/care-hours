@@ -114,11 +114,19 @@ export default function HomeScreen() {
 
   if (currentFamily.membership.role === 'worker') {
     return (
-      <WorkerHome currentFamily={currentFamily} onSignOut={() => void handleSignOut()} />
+      <WorkerHome
+        currentFamily={currentFamily}
+        onSignOut={() => void handleSignOut()}
+      />
     )
   }
 
-  return <FamilyHome currentFamily={currentFamily} onSignOut={() => void handleSignOut()} />
+  return (
+    <FamilyHome
+      currentFamily={currentFamily}
+      onSignOut={() => void handleSignOut()}
+    />
+  )
 }
 
 const styles = StyleSheet.create({
