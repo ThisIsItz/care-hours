@@ -12,8 +12,8 @@ import {
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
-import { FormInput } from '../components/FormInput'
-import { supabase } from '../lib/supabase'
+import { FormInput } from '../src/components/FormInput'
+import { supabase } from '../src/lib/supabase'
 
 export default function SignUpScreen() {
   const [name, setName] = useState('')

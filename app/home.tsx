@@ -1,36 +1,76 @@
-import { Alert, Pressable, StyleSheet, Text, View } from 'react-native'
+import {
+  ActivityIndicator,
+  Pressable,
+  StyleSheet,
+  Text,
+  View
+} from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
-import { useAuth } from '../contexts/AuthContext'
-import { supabase } from '../lib/supabase'
+import { useCurrentFamily } from '@/src/hooks/useCurrentFamily'
+import { supabase } from '@/src/lib/supabase'
 
 export default function HomeScreen() {
-  const { session } = useAuth()
+  const { data: currentFamily, isLoading, error } = useCurrentFamily()
 
-  async function handleSignOut() {
-    const { error } = await supabase.auth.signOut()
+  if (isLoading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.centered}>
+          <ActivityIndicator size="large" />
+        </View>
+      </SafeAreaView>
+    )
+  }
 
-    if (error) {
-      Alert.alert('No se pudo cerrar la sesión', error.message)
-    }
+  if (error) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.content}>
+          <Text style={styles.title}>No se pudieron cargar tus datos</Text>
+
+          <Text style={styles.subtitle}>
+            {error instanceof Error ? error.message : 'Ha ocurrido un error.'}
+          </Text>
+        </View>
+      </SafeAreaView>
+    )
+  }
+
+  if (!currentFamily) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.content}>
+          <Text style={styles.title}>Configura tu grupo de cuidado</Text>
+
+          <Text style={styles.subtitle}>
+            Crea un grupo nuevo o únete mediante una invitación.
+          </Text>
+
+          <Pressable style={styles.primaryButton}>
+            <Text style={styles.primaryButtonText}>Crear grupo</Text>
+          </Pressable>
+
+          <Pressable style={styles.secondaryButton}>
+            <Text style={styles.secondaryButtonText}>Unirme a un grupo</Text>
+          </Pressable>
+
+          <Pressable onPress={() => void supabase.auth.signOut()}>
+            <Text style={styles.signOutText}>Cerrar sesión</Text>
+          </Pressable>
+        </View>
+      </SafeAreaView>
+    )
   }
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
-        <Text style={styles.eyebrow}>Sesión iniciada</Text>
+        <Text style={styles.title}>{currentFamily.family.name}</Text>
 
-        <Text style={styles.title}>Supabase funciona 🎉</Text>
-
-        <Text style={styles.email}>{session?.user.email}</Text>
-
-        <Pressable
-          accessibilityRole="button"
-          style={styles.button}
-          onPress={() => void handleSignOut()}
-        >
-          <Text style={styles.buttonText}>Cerrar sesión</Text>
-        </Pressable>
+        <Text style={styles.subtitle}>
+          Rol: {currentFamily.membership.role}
+        </Text>
       </View>
     </SafeAreaView>
   )
@@ -41,25 +81,39 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#ffffff'
   },
+  centered: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
   content: {
     flex: 1,
     justifyContent: 'center',
-    padding: 24
-  },
-  eyebrow: {
-    marginBottom: 8,
-    fontSize: 16
+    padding: 24,
+    gap: 16
   },
   title: {
     fontSize: 32,
     fontWeight: '700'
   },
-  email: {
-    marginTop: 12,
-    marginBottom: 32,
-    fontSize: 17
+  subtitle: {
+    fontSize: 17,
+    lineHeight: 24,
+    color: '#555555'
   },
-  button: {
+  primaryButton: {
+    minHeight: 56,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 12,
+    backgroundColor: '#111111'
+  },
+  primaryButtonText: {
+    color: '#ffffff',
+    fontSize: 18,
+    fontWeight: '600'
+  },
+  secondaryButton: {
     minHeight: 56,
     alignItems: 'center',
     justifyContent: 'center',
@@ -67,8 +121,13 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#111111'
   },
-  buttonText: {
+  secondaryButtonText: {
     fontSize: 18,
     fontWeight: '600'
+  },
+  signOutText: {
+    paddingVertical: 12,
+    textAlign: 'center',
+    textDecorationLine: 'underline'
   }
 })

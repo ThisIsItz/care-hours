@@ -1,7 +1,9 @@
 import { Stack } from 'expo-router'
 import { ActivityIndicator, StyleSheet, View } from 'react-native'
+import { SafeAreaProvider } from 'react-native-safe-area-context'
 
-import { AuthProvider, useAuth } from '../contexts/AuthContext'
+import { AuthProvider, useAuth } from '@/src/contexts/AuthContext'
+import { QueryProvider } from '@/src/providers/QueryProvider'
 
 function RootNavigator() {
   const { session, isLoading } = useAuth()
@@ -31,9 +33,13 @@ function RootNavigator() {
 
 export default function RootLayout() {
   return (
-    <AuthProvider>
-      <RootNavigator />
-    </AuthProvider>
+    <SafeAreaProvider>
+      <QueryProvider>
+        <AuthProvider>
+          <RootNavigator />
+        </AuthProvider>
+      </QueryProvider>
+    </SafeAreaProvider>
   )
 }
 
