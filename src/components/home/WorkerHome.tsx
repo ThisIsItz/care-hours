@@ -1,4 +1,4 @@
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
+import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 import { WorkerShiftCard } from '@/src/components/WorkerShiftCard'
@@ -10,6 +10,13 @@ type WorkerHomeProps = {
 }
 
 export function WorkerHome({ currentFamily, onSignOut }: WorkerHomeProps) {
+  function confirmSignOut() {
+    Alert.alert('Cerrar sesión', '¿Seguro que quieres salir?', [
+      { text: 'Cancelar', style: 'cancel' },
+      { text: 'Cerrar sesión', style: 'destructive', onPress: onSignOut }
+    ])
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView
@@ -17,18 +24,27 @@ export function WorkerHome({ currentFamily, onSignOut }: WorkerHomeProps) {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.header}>
-          <Text style={styles.title}>{currentFamily.family.name}</Text>
-          <Text style={styles.subtitle}>Tu turno de cuidado</Text>
+          <View style={styles.headerText}>
+            <Text style={styles.title}>{currentFamily.family.name}</Text>
+            <Text style={styles.subtitle}>Tu turno de cuidado</Text>
+          </View>
+
+          <Pressable
+            hitSlop={12}
+            style={({ pressed }) => [
+              styles.signOutButton,
+              pressed && styles.signOutButtonPressed
+            ]}
+            onPress={confirmSignOut}
+          >
+            <Text style={styles.signOutText}>Salir</Text>
+          </Pressable>
         </View>
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Mi turno</Text>
           <WorkerShiftCard />
         </View>
-
-        <Pressable style={styles.secondaryButton} onPress={onSignOut}>
-          <Text style={styles.secondaryButtonText}>Cerrar sesión</Text>
-        </Pressable>
       </ScrollView>
     </SafeAreaView>
   )
@@ -45,7 +61,13 @@ const styles = StyleSheet.create({
     gap: 24
   },
   header: {
-    gap: 4
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between'
+  },
+  headerText: {
+    gap: 4,
+    flex: 1
   },
   title: {
     fontSize: 32,
@@ -56,23 +78,21 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     color: '#555555'
   },
+  signOutButton: {
+    paddingTop: 6
+  },
+  signOutButtonPressed: {
+    opacity: 0.4
+  },
+  signOutText: {
+    fontSize: 15,
+    color: '#888888'
+  },
   section: {
     gap: 12
   },
   sectionTitle: {
     fontSize: 20,
     fontWeight: '700'
-  },
-  secondaryButton: {
-    minHeight: 56,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#111111'
-  },
-  secondaryButtonText: {
-    fontSize: 18,
-    fontWeight: '600'
   }
 })
