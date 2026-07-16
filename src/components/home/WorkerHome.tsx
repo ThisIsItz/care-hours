@@ -25,21 +25,8 @@ export function WorkerHome({ currentFamily, onSignOut }: WorkerHomeProps) {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.header}>
-          <View style={styles.headerText}>
-            <Text style={styles.title}>{currentFamily.family.name}</Text>
-            <Text style={styles.subtitle}>Tu turno de cuidado</Text>
-          </View>
-
-          <Pressable
-            hitSlop={16}
-            style={({ pressed }) => [
-              styles.signOutButton,
-              pressed && styles.signOutButtonPressed
-            ]}
-            onPress={confirmSignOut}
-          >
-            <Text style={styles.signOutText}>Salir</Text>
-          </Pressable>
+          <Text style={styles.title}>{currentFamily.family.name}</Text>
+          <Text style={styles.subtitle}>Tu turno de cuidado</Text>
         </View>
 
         <View style={styles.section}>
@@ -55,6 +42,18 @@ export function WorkerHome({ currentFamily, onSignOut }: WorkerHomeProps) {
           <WorkerShiftCard />
         </View>
       </ScrollView>
+
+      <View style={styles.footer}>
+        <Pressable
+          style={({ pressed }) => [
+            styles.signOutButton,
+            pressed && styles.signOutButtonPressed
+          ]}
+          onPress={confirmSignOut}
+        >
+          <Text style={styles.signOutText}>Cerrar sesión</Text>
+        </Pressable>
+      </View>
     </SafeAreaView>
   )
 }
@@ -70,13 +69,7 @@ const styles = StyleSheet.create({
     gap: 28
   },
   header: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    justifyContent: 'space-between'
-  },
-  headerText: {
-    gap: 6,
-    flex: 1
+    gap: 6
   },
   title: {
     fontSize: 32,
@@ -87,16 +80,6 @@ const styles = StyleSheet.create({
     fontSize: 17,
     lineHeight: 24,
     color: '#555555'
-  },
-  signOutButton: {
-    paddingTop: 6
-  },
-  signOutButtonPressed: {
-    opacity: 0.4
-  },
-  signOutText: {
-    fontSize: 16,
-    color: '#888888'
   },
   section: {
     gap: 14
@@ -114,5 +97,27 @@ const styles = StyleSheet.create({
   historialLink: {
     fontSize: 16,
     color: '#555555'
+  },
+  footer: {
+    padding: 24,
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#E5E7EB'
+  },
+  signOutButton: {
+    minHeight: 60,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 16,
+    borderWidth: 1.5,
+    borderColor: '#D1D5DB'
+  },
+  signOutButtonPressed: {
+    backgroundColor: '#F9FAFB'
+  },
+  signOutText: {
+    fontSize: 19,
+    fontWeight: '600',
+    color: '#111111'
   }
 })

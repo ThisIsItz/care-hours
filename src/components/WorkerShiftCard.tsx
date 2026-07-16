@@ -19,21 +19,31 @@ function formatTime(date: string) {
   }).format(new Date(date))
 }
 
-function formatDuration(startedAt: string, now: number) {
-  const elapsedMilliseconds = now - new Date(startedAt).getTime()
-  const totalMinutes = Math.max(0, Math.floor(elapsedMilliseconds / 60_000))
+function getErrorMessage(error: unknown) {
+  return error instanceof Error ? error.message : 'Ha ocurrido un error.'
+}
+
+type DurationProps = {
+  startedAt: string
+  now: number
+}
+
+function Duration({ startedAt, now }: DurationProps) {
+  const elapsed = now - new Date(startedAt).getTime()
+  const totalMinutes = Math.max(0, Math.floor(elapsed / 60_000))
   const hours = Math.floor(totalMinutes / 60)
   const minutes = totalMinutes % 60
 
   if (hours === 0) {
-    return `${minutes} min`
+    return <Text style={styles.timeValue}>{minutes} min</Text>
   }
 
-  return `${hours} h ${minutes.toString().padStart(2, '0')} min`
-}
-
-function getErrorMessage(error: unknown) {
-  return error instanceof Error ? error.message : 'Ha ocurrido un error.'
+  return (
+    <View style={styles.durationStack}>
+      <Text style={styles.timeValue}>{hours} h</Text>
+      <Text style={styles.timeValueSub}>{minutes.toString().padStart(2, '0')} min</Text>
+    </View>
+  )
 }
 
 export function WorkerShiftCard() {
@@ -135,23 +145,25 @@ export function WorkerShiftCard() {
   }
 
   return (
-    <View style={styles.activeCard}>
-      <View style={styles.activeHeader}>
-        <View style={styles.activeDot} />
-        <Text style={styles.activeStatusText}>Estás trabajando</Text>
-      </View>
-
-      <View style={styles.timeGrid}>
-        <View style={styles.timeBlock}>
-          <Text style={styles.timeLabel}>Entrada</Text>
-          <Text style={styles.timeValue}>{formatTime(currentShift.started_at)}</Text>
+    <>
+      <View style={styles.activeCard}>
+        <View style={styles.activeHeader}>
+          <View style={styles.activeDot} />
+          <Text style={styles.activeStatusText}>Estás trabajando</Text>
         </View>
 
-        <View style={styles.timeDivider} />
+        <View style={styles.timeGrid}>
+          <View style={styles.timeBlock}>
+            <Text style={styles.timeLabel}>Entrada</Text>
+            <Text style={styles.timeValue}>{formatTime(currentShift.started_at)}</Text>
+          </View>
 
-        <View style={styles.timeBlock}>
-          <Text style={styles.timeLabel}>Llevas</Text>
-          <Text style={styles.timeValue}>{formatDuration(currentShift.started_at, now)}</Text>
+          <View style={styles.timeDivider} />
+
+          <View style={styles.timeBlock}>
+            <Text style={styles.timeLabel}>Llevas</Text>
+            <Duration startedAt={currentShift.started_at} now={now} />
+          </View>
         </View>
       </View>
 
@@ -173,7 +185,7 @@ export function WorkerShiftCard() {
           <Text style={styles.endButtonText}>Terminar turno</Text>
         )}
       </Pressable>
-    </View>
+    </>
   )
 }
 
@@ -252,8 +264,7 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderColor: '#BBF7D0',
     backgroundColor: '#F0FDF4',
-    overflow: 'hidden',
-    gap: 0
+    overflow: 'hidden'
   },
   activeHeader: {
     flexDirection: 'row',
@@ -279,8 +290,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: 24,
-    paddingVertical: 28,
-    gap: 0
+    paddingVertical: 28
   },
   timeBlock: {
     flex: 1,
@@ -288,7 +298,7 @@ const styles = StyleSheet.create({
   },
   timeDivider: {
     width: 1,
-    height: 56,
+    height: 64,
     backgroundColor: '#BBF7D0',
     marginHorizontal: 16
   },
@@ -303,21 +313,31 @@ const styles = StyleSheet.create({
     color: '#14532D',
     letterSpacing: -0.5
   },
+  durationStack: {
+    gap: 2
+  },
+  timeValueSub: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#166534'
+  },
+  // End button — standalone below the card
   endButton: {
     minHeight: 68,
     alignItems: 'center',
     justifyContent: 'center',
-    borderTopWidth: 1.5,
-    borderTopColor: '#BBF7D0',
-    backgroundColor: '#FFFFFF'
+    borderRadius: 16,
+    borderWidth: 1.5,
+    borderColor: '#FCA5A5',
+    backgroundColor: '#FEF2F2'
   },
   endButtonPressed: {
-    backgroundColor: '#F9FAFB'
+    backgroundColor: '#FEE2E2'
   },
   endButtonText: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#111111'
+    color: '#B91C1C'
   },
   buttonDisabled: {
     opacity: 0.5
