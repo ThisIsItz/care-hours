@@ -47,6 +47,13 @@ function RootNavigator() {
             title: 'Unirme a un grupo'
           }}
         />
+        <Stack.Screen
+          name="shift-history"
+          options={{
+            headerShown: true,
+            title: 'Historial'
+          }}
+        />
       </Stack.Protected>
     </Stack>
   )
