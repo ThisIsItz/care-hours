@@ -1,6 +1,13 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native'
+import {
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View
+} from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
+import { ActiveWorkersSection } from '@/src/components/ActiveWorkersSection'
 import type { CurrentFamily } from '@/src/types/family'
 
 type FamilyHomeProps = {
@@ -11,17 +18,23 @@ type FamilyHomeProps = {
 export function FamilyHome({ currentFamily, onSignOut }: FamilyHomeProps) {
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.content}>
-        <Text style={styles.title}>{currentFamily.family.name}</Text>
-        <Text style={styles.subtitle}>Tu rol actual es familiar.</Text>
-        <Text style={styles.description}>
-          Puedes ver el grupo y participar desde aquí.
-        </Text>
+      <ScrollView
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.header}>
+          <Text style={styles.title}>{currentFamily.family.name}</Text>
 
-        <Pressable style={styles.secondaryButton} onPress={onSignOut}>
-          <Text style={styles.secondaryButtonText}>Cerrar sesión</Text>
-        </Pressable>
-      </View>
+          <Pressable style={styles.signOutButton} onPress={onSignOut}>
+            <Text style={styles.signOutButtonText}>Salir</Text>
+          </Pressable>
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Trabajando ahora</Text>
+          <ActiveWorkersSection />
+        </View>
+      </ScrollView>
     </SafeAreaView>
   )
 }
@@ -32,35 +45,38 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff'
   },
   content: {
-    flex: 1,
-    justifyContent: 'center',
+    flexGrow: 1,
     padding: 24,
+    gap: 28
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     gap: 16
   },
   title: {
+    flex: 1,
     fontSize: 32,
     fontWeight: '700'
   },
-  subtitle: {
-    fontSize: 17,
-    lineHeight: 24,
-    color: '#555555'
-  },
-  description: {
-    fontSize: 16,
-    lineHeight: 22,
-    color: '#666666'
-  },
-  secondaryButton: {
-    minHeight: 56,
-    alignItems: 'center',
+  signOutButton: {
+    minHeight: 44,
     justifyContent: 'center',
-    borderRadius: 12,
+    paddingHorizontal: 18,
+    borderRadius: 10,
     borderWidth: 1,
     borderColor: '#111111'
   },
-  secondaryButtonText: {
-    fontSize: 18,
+  signOutButtonText: {
+    fontSize: 16,
     fontWeight: '600'
+  },
+  section: {
+    gap: 12
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: '700'
   }
 })

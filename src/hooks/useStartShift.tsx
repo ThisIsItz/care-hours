@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 import { startShift } from '@/src/services/shift.service'
 
+import { activeShiftsBaseKey } from './useActiveShifts'
 import { currentShiftQueryKey } from './useCurrentShift'
 
 export function useStartShift() {
@@ -15,6 +16,10 @@ export function useStartShift() {
 
       await queryClient.invalidateQueries({
         queryKey: currentShiftQueryKey
+      })
+
+      await queryClient.invalidateQueries({
+        queryKey: activeShiftsBaseKey
       })
     }
   })

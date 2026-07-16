@@ -9,7 +9,7 @@ type FamilyMemberCardProps = {
 const roleLabels: Record<MemberRole, string> = {
   admin: 'Administrador',
   family: 'Familiar',
-  worker: 'Cuidadora'
+  worker: 'Cuidador'
 }
 
 export function FamilyMemberCard({ member }: FamilyMemberCardProps) {

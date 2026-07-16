@@ -8,6 +8,7 @@ import {
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
+import { ActiveWorkersSection } from '@/src/components/ActiveWorkersSection'
 import { FamilyMemberCard } from '@/src/components/FamilyMemberCard'
 import type { CurrentFamily, FamilyMember } from '@/src/types/family'
 
@@ -51,6 +52,11 @@ export function AdminHome({
           <Pressable style={styles.inviteButton} onPress={onInvitePress}>
             <Text style={styles.inviteButtonText}>Invitar</Text>
           </Pressable>
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Trabajando ahora</Text>
+          <ActiveWorkersSection />
         </View>
 
         <View style={styles.section}>
