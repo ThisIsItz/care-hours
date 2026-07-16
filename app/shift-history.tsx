@@ -271,6 +271,8 @@ export default function ShiftHistoryScreen() {
         <View style={styles.dateField}>
           <Text style={styles.dateFieldLabel}>Desde</Text>
           <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={`Fecha de inicio: ${formatDateLabel(startDate)}. Toca para cambiar`}
             style={({ pressed }) => [
               styles.dateButton,
               pressed && styles.dateButtonPressed
@@ -285,6 +287,8 @@ export default function ShiftHistoryScreen() {
         <View style={styles.dateField}>
           <Text style={styles.dateFieldLabel}>Hasta</Text>
           <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={`Fecha de fin: ${formatDateLabel(endDate)}. Toca para cambiar`}
             style={({ pressed }) => [
               styles.dateButton,
               pressed && styles.dateButtonPressed
@@ -299,6 +303,9 @@ export default function ShiftHistoryScreen() {
 
       {canExport ? (
         <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Compartir turnos"
+          accessibilityState={{ disabled: isExporting }}
           style={({ pressed }) => [
             styles.shareButton,
             isExporting && styles.actionButtonDisabled,
@@ -346,15 +353,17 @@ export default function ShiftHistoryScreen() {
           onRequestClose={() => setActivePicker(null)}
         >
           <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Cerrar selector de fecha"
             style={styles.modalOverlay}
             onPress={() => setActivePicker(null)}
           />
           <View style={styles.pickerSheet}>
             <View style={styles.pickerToolbar}>
-              <Pressable hitSlop={16} onPress={() => setActivePicker(null)}>
+              <Pressable accessibilityRole="button" hitSlop={16} onPress={() => setActivePicker(null)}>
                 <Text style={styles.pickerCancel}>Cancelar</Text>
               </Pressable>
-              <Pressable hitSlop={16} onPress={confirmIOSPicker}>
+              <Pressable accessibilityRole="button" hitSlop={16} onPress={confirmIOSPicker}>
                 <Text style={styles.pickerDone}>Listo</Text>
               </Pressable>
             </View>

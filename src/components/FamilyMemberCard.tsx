@@ -29,7 +29,7 @@ export function FamilyMemberCard({ member }: FamilyMemberCardProps) {
         <View style={styles.nameRow}>
           <Text style={styles.name}>{member.full_name}</Text>
           {isCurrentUser ? (
-            <View style={styles.youBadge}>
+            <View accessible={false} style={styles.youBadge}>
               <Text style={styles.youBadgeText}>Tú</Text>
             </View>
           ) : null}

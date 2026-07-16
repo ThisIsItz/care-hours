@@ -16,6 +16,7 @@ export function FormInput({ label, ...inputProps }: FormInputProps) {
       <Text style={styles.label}>{label}</Text>
       <TextInput
         {...inputProps}
+        accessibilityLabel={label}
         placeholderTextColor="#9CA3AF"
         autoCapitalize={inputProps.autoCapitalize ?? 'none'}
         style={[styles.input, inputProps.style]}

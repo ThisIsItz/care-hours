@@ -33,6 +33,8 @@ export function WorkerHome({ currentFamily, onSignOut }: WorkerHomeProps) {
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Mi turno</Text>
             <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Ver historial de turnos"
               hitSlop={16}
               onPress={() => router.push('/shift-history')}
             >
@@ -45,6 +47,8 @@ export function WorkerHome({ currentFamily, onSignOut }: WorkerHomeProps) {
 
       <View style={styles.footer}>
         <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Cerrar sesión"
           style={({ pressed }) => [
             styles.signOutButton,
             pressed && styles.signOutButtonPressed

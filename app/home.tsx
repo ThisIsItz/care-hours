@@ -74,6 +74,7 @@ export default function HomeScreen() {
           </Text>
 
           <Pressable
+            accessibilityRole="button"
             style={styles.primaryButton}
             onPress={() => router.navigate('/create-family')}
           >
@@ -81,6 +82,7 @@ export default function HomeScreen() {
           </Pressable>
 
           <Pressable
+            accessibilityRole="button"
             style={styles.secondaryButton}
             onPress={() => router.navigate('/join-family')}
           >

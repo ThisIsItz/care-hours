@@ -54,7 +54,7 @@ export function FamilyHome({
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Trabajando ahora</Text>
-            <Pressable hitSlop={16} onPress={() => router.push('/shift-history')}>
+            <Pressable accessibilityRole="button" accessibilityLabel="Ver historial de turnos" hitSlop={16} onPress={() => router.push('/shift-history')}>
               <Text style={styles.historialLink}>Historial</Text>
             </Pressable>
           </View>
@@ -86,6 +86,8 @@ export function FamilyHome({
 
       <View style={styles.footer}>
         <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Cerrar sesión"
           style={({ pressed }) => [
             styles.signOutButton,
             pressed && styles.signOutButtonPressed

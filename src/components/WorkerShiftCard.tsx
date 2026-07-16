@@ -114,7 +114,7 @@ export function WorkerShiftCard() {
     return (
       <View style={styles.inactiveCard}>
         <View style={styles.statusRow}>
-          <View style={styles.inactiveDot} />
+          <View accessible={false} style={styles.inactiveDot} />
           <Text style={styles.statusText}>No estás trabajando</Text>
         </View>
 
@@ -148,7 +148,7 @@ export function WorkerShiftCard() {
     <>
       <View style={styles.activeCard}>
         <View style={styles.activeHeader}>
-          <View style={styles.activeDot} />
+          <View accessible={false} style={styles.activeDot} />
           <Text style={styles.activeStatusText}>Estás trabajando</Text>
         </View>
 
@@ -158,7 +158,7 @@ export function WorkerShiftCard() {
             <Text style={styles.timeValue}>{formatTime(currentShift.started_at)}</Text>
           </View>
 
-          <View style={styles.timeDivider} />
+          <View accessible={false} style={styles.timeDivider} />
 
           <View style={styles.timeBlock}>
             <Text style={styles.timeLabel}>Llevas</Text>

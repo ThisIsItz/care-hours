@@ -117,13 +117,13 @@ export default function SignUpScreen() {
 
           <View style={styles.actions}>
             {formError ? (
-              <View style={styles.errorBox}>
+              <View accessibilityLiveRegion="assertive" style={styles.errorBox}>
                 <Text style={styles.errorText}>{formError}</Text>
               </View>
             ) : null}
 
             {successMessage ? (
-              <View style={styles.successBox}>
+              <View accessibilityLiveRegion="polite" style={styles.successBox}>
                 <Text style={styles.successText}>{successMessage}</Text>
               </View>
             ) : null}

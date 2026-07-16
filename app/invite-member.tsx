@@ -51,6 +51,10 @@ export default function InviteMemberScreen() {
         </View>
 
         <Pressable
+          accessibilityRole="radio"
+          accessibilityState={{ checked: selectedRole === 'family' }}
+          accessibilityLabel="Familiar"
+          accessibilityHint="Podrá consultar los turnos y las horas"
           style={[
             styles.roleButton,
             selectedRole === 'family' && styles.selectedRoleButton
@@ -65,6 +69,10 @@ export default function InviteMemberScreen() {
         </Pressable>
 
         <Pressable
+          accessibilityRole="radio"
+          accessibilityState={{ checked: selectedRole === 'worker' }}
+          accessibilityLabel="Cuidador"
+          accessibilityHint="Podrá fichar entrada y salida"
           style={[
             styles.roleButton,
             selectedRole === 'worker' && styles.selectedRoleButton
@@ -79,6 +87,9 @@ export default function InviteMemberScreen() {
         </Pressable>
 
         <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Generar código de invitación"
+          accessibilityState={{ disabled: createInviteMutation.isPending }}
           disabled={createInviteMutation.isPending}
           style={[
             styles.primaryButton,
@@ -94,14 +105,23 @@ export default function InviteMemberScreen() {
         </Pressable>
 
         {generatedCode ? (
-          <View style={styles.codeCard}>
+          <View
+            accessibilityLiveRegion="polite"
+            style={styles.codeCard}
+          >
             <Text style={styles.codeLabel}>Código de invitación</Text>
 
-            <Text selectable style={styles.code}>
+            <Text
+              selectable
+              accessibilityLabel={`Código de invitación: ${generatedCode}`}
+              style={styles.code}
+            >
               {generatedCode}
             </Text>
 
             <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={copied ? 'Código copiado' : 'Copiar código de invitación'}
               style={({ pressed }) => [
                 styles.copyButton,
                 copied && styles.copyButtonDone,

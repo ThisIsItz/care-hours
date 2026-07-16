@@ -79,7 +79,7 @@ export function ActiveWorkersSection() {
         return (
           <View key={shift.id} style={styles.card}>
             <View style={styles.cardHeader}>
-              <View style={styles.activeDot} />
+              <View accessible={false} style={styles.activeDot} />
               <Text style={styles.workerName}>{workerName}</Text>
             </View>
 
@@ -91,7 +91,7 @@ export function ActiveWorkersSection() {
                 </Text>
               </View>
 
-              <View style={styles.detailDivider} />
+              <View accessible={false} style={styles.detailDivider} />
 
               <View style={styles.detailBlock}>
                 <Text style={styles.detailLabel}>Total</Text>
