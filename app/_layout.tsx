@@ -54,6 +54,13 @@ function RootNavigator() {
             title: 'Historial'
           }}
         />
+        <Stack.Screen
+          name="edit-shift"
+          options={{
+            headerShown: true,
+            title: 'Editar turno'
+          }}
+        />
       </Stack.Protected>
     </Stack>
   )

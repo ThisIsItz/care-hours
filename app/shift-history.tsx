@@ -2,6 +2,7 @@ import DateTimePicker from '@react-native-community/datetimepicker'
 import * as FileSystem from 'expo-file-system/legacy'
 import * as Print from 'expo-print'
 import * as Sharing from 'expo-sharing'
+import { router } from 'expo-router'
 import { useMemo, useState } from 'react'
 import {
   ActivityIndicator,
@@ -53,9 +54,11 @@ function formatDateLabel(date: Date) {
 type ShiftRowProps = {
   shift: Shift
   workerName: string
+  isAdmin: boolean
+  onEdit: () => void
 }
 
-function ShiftRow({ shift, workerName }: ShiftRowProps) {
+function ShiftRow({ shift, workerName, isAdmin, onEdit }: ShiftRowProps) {
   return (
     <View style={styles.row}>
       <View style={styles.rowLeft}>
@@ -66,9 +69,24 @@ function ShiftRow({ shift, workerName }: ShiftRowProps) {
           <Text style={styles.time}>{formatTime(shift.ended_at!)}</Text>
         </View>
       </View>
-      <Text style={styles.duration}>
-        {formatDuration(shift.started_at, shift.ended_at!)}
-      </Text>
+      <View style={styles.rowRight}>
+        <Text style={styles.duration}>
+          {formatDuration(shift.started_at, shift.ended_at!)}
+        </Text>
+        {isAdmin ? (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={`Editar turno de ${workerName}`}
+            style={({ pressed }) => [
+              styles.editButton,
+              pressed && styles.editButtonPressed
+            ]}
+            onPress={onEdit}
+          >
+            <Text style={styles.editButtonText}>Editar</Text>
+          </Pressable>
+        ) : null}
+      </View>
     </View>
   )
 }
@@ -91,6 +109,7 @@ export default function ShiftHistoryScreen() {
   const { data: members } = useFamilyMembers()
   const { data: currentFamily } = useCurrentFamily()
   const canExport = currentFamily?.membership.role !== 'worker'
+  const isAdmin = currentFamily?.membership.role === 'admin'
 
   const [startDate, setStartDate] = useState<Date>(startOfCurrentMonth)
   const [endDate, setEndDate] = useState<Date>(endOfToday)
@@ -414,10 +433,24 @@ export default function ShiftHistoryScreen() {
         )}
         renderItem={({ item }) => {
           const member = members?.find((m) => m.user_id === item.worker_id)
+          const workerName = member?.full_name ?? 'Trabajador'
+          const isCompleted = Boolean(item.ended_at)
           return (
             <ShiftRow
               shift={item}
-              workerName={member?.full_name ?? 'Trabajador'}
+              workerName={workerName}
+              isAdmin={isAdmin && isCompleted}
+              onEdit={() =>
+                router.push({
+                  pathname: '/edit-shift',
+                  params: {
+                    shiftId: item.id,
+                    workerName,
+                    startedAt: item.started_at,
+                    endedAt: item.ended_at ?? ''
+                  }
+                })
+              }
             />
           )
         }}
@@ -529,7 +562,12 @@ const styles = StyleSheet.create({
     gap: 16
   },
   rowLeft: {
-    gap: 4
+    gap: 4,
+    flex: 1
+  },
+  rowRight: {
+    alignItems: 'flex-end',
+    gap: 6
   },
   workerName: {
     fontSize: 18,
@@ -553,6 +591,23 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '700',
     color: '#111111'
+  },
+  editButton: {
+    height: 36,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    borderWidth: 1.5,
+    borderColor: '#D1D5DB',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  editButtonPressed: {
+    backgroundColor: '#F3F4F6'
+  },
+  editButtonText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#374151'
   },
   separator: {
     height: 1,

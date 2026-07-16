@@ -6,4 +6,7 @@ export type Shift = {
   ended_at: string | null
   note: string | null
   created_at: string
+  edited_at: string | null
+  edited_by: string | null
+  edit_reason: string | null
 }
