@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native'
 
+import { useAuth } from '@/src/contexts/AuthContext'
 import type { FamilyMember, MemberRole } from '@/src/types/family'
 
 type FamilyMemberCardProps = {
@@ -13,6 +14,9 @@ const roleLabels: Record<MemberRole, string> = {
 }
 
 export function FamilyMemberCard({ member }: FamilyMemberCardProps) {
+  const { session } = useAuth()
+  const isCurrentUser = session?.user.id === member.user_id
+
   return (
     <View style={styles.card}>
       <View style={styles.avatar}>
@@ -22,7 +26,14 @@ export function FamilyMemberCard({ member }: FamilyMemberCardProps) {
       </View>
 
       <View style={styles.content}>
-        <Text style={styles.name}>{member.full_name}</Text>
+        <View style={styles.nameRow}>
+          <Text style={styles.name}>{member.full_name}</Text>
+          {isCurrentUser ? (
+            <View style={styles.youBadge}>
+              <Text style={styles.youBadgeText}>Tú</Text>
+            </View>
+          ) : null}
+        </View>
         <Text style={styles.role}>{roleLabels[member.role]}</Text>
       </View>
     </View>
@@ -56,10 +67,28 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: 4
   },
+  nameRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8
+  },
   name: {
     fontSize: 18,
     fontWeight: '600',
     color: '#111111'
+  },
+  youBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 6,
+    backgroundColor: '#F0FDF4',
+    borderWidth: 1,
+    borderColor: '#BBF7D0'
+  },
+  youBadgeText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#15803D'
   },
   role: {
     fontSize: 16,
