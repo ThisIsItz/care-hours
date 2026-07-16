@@ -200,7 +200,7 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     fontSize: 17,
-    color: '#6B7280'
+    color: '#555555'
   },
   errorCard: {
     padding: 20,

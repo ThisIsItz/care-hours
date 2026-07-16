@@ -184,7 +184,7 @@ const styles = StyleSheet.create({
   },
   helperText: {
     fontSize: 15,
-    color: '#6B7280',
+    color: '#555555',
     paddingHorizontal: 2
   },
   actions: {

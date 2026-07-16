@@ -173,8 +173,8 @@ const styles = StyleSheet.create({
   },
   roleButton: {
     padding: 18,
-    borderWidth: 1,
-    borderColor: '#cccccc',
+    borderWidth: 1.5,
+    borderColor: '#D1D5DB',
     borderRadius: 12,
     gap: 6
   },
@@ -187,7 +187,7 @@ const styles = StyleSheet.create({
     fontWeight: '700'
   },
   roleDescription: {
-    fontSize: 15,
+    fontSize: 16,
     color: '#555555'
   },
   primaryButton: {
@@ -209,11 +209,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 24,
     borderRadius: 12,
-    backgroundColor: '#f3f3f3',
+    backgroundColor: '#F3F4F6',
     gap: 10
   },
   codeLabel: {
-    fontSize: 15,
+    fontSize: 16,
     color: '#555555'
   },
   code: {
@@ -237,7 +237,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F0FDF4'
   },
   copyButtonText: {
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: '600',
     color: '#111111'
   },
@@ -245,13 +245,13 @@ const styles = StyleSheet.create({
     color: '#15803D'
   },
   codeHelp: {
-    fontSize: 14,
-    lineHeight: 20,
+    fontSize: 16,
+    lineHeight: 24,
     textAlign: 'center',
     color: '#555555'
   },
   errorText: {
-    fontSize: 14,
-    color: '#b42318'
+    fontSize: 16,
+    color: '#B91C1C'
   }
 })

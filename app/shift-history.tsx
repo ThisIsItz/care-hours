@@ -466,7 +466,7 @@ const styles = StyleSheet.create({
     gap: 6
   },
   dateFieldLabel: {
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: '600',
     color: '#555555',
     paddingLeft: 2
@@ -490,8 +490,8 @@ const styles = StyleSheet.create({
     color: '#111111'
   },
   dateButtonHint: {
-    fontSize: 12,
-    color: '#9CA3AF'
+    fontSize: 14,
+    color: '#6B7280'
   },
   actionButtonDisabled: {
     opacity: 0.5
@@ -547,7 +547,7 @@ const styles = StyleSheet.create({
   },
   timeSeparator: {
     fontSize: 15,
-    color: '#9CA3AF'
+    color: '#6B7280'
   },
   duration: {
     fontSize: 18,
@@ -603,7 +603,7 @@ const styles = StyleSheet.create({
   },
   pickerCancel: {
     fontSize: 17,
-    color: '#888888'
+    color: '#555555'
   },
   pickerDone: {
     fontSize: 17,

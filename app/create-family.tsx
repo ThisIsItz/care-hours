@@ -141,8 +141,8 @@ const styles = StyleSheet.create({
     color: '#555555'
   },
   errorText: {
-    fontSize: 14,
-    color: '#b42318'
+    fontSize: 16,
+    color: '#B91C1C'
   },
   primaryButton: {
     minHeight: 56,

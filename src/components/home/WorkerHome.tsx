@@ -35,10 +35,13 @@ export function WorkerHome({ currentFamily, onSignOut }: WorkerHomeProps) {
             <Pressable
               accessibilityRole="button"
               accessibilityLabel="Ver historial de turnos"
-              hitSlop={16}
+              style={({ pressed }) => [
+                styles.historialButton,
+                pressed && styles.historialButtonPressed
+              ]}
               onPress={() => router.push('/shift-history')}
             >
-              <Text style={styles.historialLink}>Historial</Text>
+              <Text style={styles.historialButtonText}>Historial</Text>
             </Pressable>
           </View>
           <WorkerShiftCard />
@@ -98,9 +101,20 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#111111'
   },
-  historialLink: {
-    fontSize: 16,
-    color: '#555555'
+  historialButton: {
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 10,
+    borderWidth: 1.5,
+    borderColor: '#D1D5DB'
+  },
+  historialButtonPressed: {
+    backgroundColor: '#F3F4F6'
+  },
+  historialButtonText: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#111111'
   },
   footer: {
     padding: 24,
