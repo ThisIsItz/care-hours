@@ -135,37 +135,80 @@ export default function ShiftHistoryScreen() {
     setActivePicker(null)
   }
 
-  async function handleExport() {
+  function buildCSV() {
+    const header = 'Cuidador,Fecha,Hora inicio,Hora fin,Duración'
+    const rows = filteredShifts.map((shift) => {
+      const member = members?.find((m) => m.user_id === shift.worker_id)
+      const name = (member?.full_name ?? 'Trabajador').replace(/"/g, '""')
+      const date = new Intl.DateTimeFormat('es-ES').format(new Date(shift.started_at))
+      const start = formatTime(shift.started_at)
+      const end = formatTime(shift.ended_at!)
+      const duration = formatDuration(shift.started_at, shift.ended_at!)
+      return `"${name}","${date}","${start}","${end}","${duration}"`
+    })
+    return [header, ...rows].join('\n')
+  }
+
+  async function writeCSV() {
+    const dir = FileSystem.documentDirectory
+    if (!dir) throw new Error('No hay acceso al sistema de archivos.')
+    const uri = dir + 'turnos.csv'
+    await FileSystem.writeAsStringAsync(uri, buildCSV(), {
+      encoding: FileSystem.EncodingType.UTF8
+    })
+    return uri
+  }
+
+  async function handleDownload() {
     if (filteredShifts.length === 0) {
       Alert.alert('Sin datos', 'No hay turnos en el rango seleccionado.')
       return
     }
     setIsExporting(true)
     try {
-      const header = 'Cuidador,Fecha,Hora inicio,Hora fin,Duración'
-      const rows = filteredShifts.map((shift) => {
-        const member = members?.find((m) => m.user_id === shift.worker_id)
-        const name = (member?.full_name ?? 'Trabajador').replace(/"/g, '""')
-        const date = new Intl.DateTimeFormat('es-ES').format(new Date(shift.started_at))
-        const start = formatTime(shift.started_at)
-        const end = formatTime(shift.ended_at!)
-        const duration = formatDuration(shift.started_at, shift.ended_at!)
-        return `"${name}","${date}","${start}","${end}","${duration}"`
-      })
-      const csv = [header, ...rows].join('\n')
+      if (Platform.OS === 'android') {
+        const permissions =
+          await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync()
+        if (!permissions.granted) return
+        const csv = buildCSV()
+        const uri = await FileSystem.StorageAccessFramework.createFileAsync(
+          permissions.directoryUri,
+          'turnos.csv',
+          'text/csv'
+        )
+        await FileSystem.writeAsStringAsync(uri, csv, {
+          encoding: FileSystem.EncodingType.UTF8
+        })
+      } else {
+        await writeCSV()
+      }
+      Alert.alert(
+        'Guardado',
+        Platform.OS === 'ios'
+          ? 'Archivo guardado. Encuéntralo en Archivos → care-hours.'
+          : 'Archivo guardado correctamente.'
+      )
+    } catch {
+      Alert.alert('Error', 'No se pudo guardar el archivo.')
+    } finally {
+      setIsExporting(false)
+    }
+  }
 
-      const dir = FileSystem.documentDirectory
-      if (!dir) throw new Error('No hay acceso al sistema de archivos.')
-      const uri = dir + 'turnos.csv'
-      await FileSystem.writeAsStringAsync(uri, csv, {
-        encoding: FileSystem.EncodingType.UTF8
-      })
+  async function handleShare() {
+    if (filteredShifts.length === 0) {
+      Alert.alert('Sin datos', 'No hay turnos en el rango seleccionado.')
+      return
+    }
+    setIsExporting(true)
+    try {
+      const uri = await writeCSV()
       await Sharing.shareAsync(uri, {
         mimeType: 'text/csv',
-        dialogTitle: 'Exportar turnos'
+        dialogTitle: 'Compartir turnos'
       })
     } catch {
-      Alert.alert('Error', 'No se pudo exportar el archivo.')
+      Alert.alert('Error', 'No se pudo compartir el archivo.')
     } finally {
       setIsExporting(false)
     }
@@ -189,17 +232,35 @@ export default function ShiftHistoryScreen() {
         </Pressable>
       </View>
 
-      <Pressable
-        style={({ pressed }) => [
-          styles.exportButton,
-          isExporting && styles.exportButtonDisabled,
-          pressed && styles.exportButtonPressed
-        ]}
-        disabled={isExporting}
-        onPress={() => void handleExport()}
-      >
-        <Text style={styles.exportButtonText}>{isExporting ? '…' : 'CSV'}</Text>
-      </Pressable>
+      <View style={styles.actions}>
+        <Pressable
+          style={({ pressed }) => [
+            styles.actionButton,
+            styles.actionButtonOutline,
+            isExporting && styles.actionButtonDisabled,
+            pressed && styles.actionButtonOutlinePressed
+          ]}
+          disabled={isExporting}
+          onPress={() => void handleShare()}
+        >
+          <Text style={styles.actionButtonOutlineText}>Compartir</Text>
+        </Pressable>
+
+        <Pressable
+          style={({ pressed }) => [
+            styles.actionButton,
+            styles.actionButtonFill,
+            isExporting && styles.actionButtonDisabled,
+            pressed && styles.actionButtonFillPressed
+          ]}
+          disabled={isExporting}
+          onPress={() => void handleDownload()}
+        >
+          <Text style={styles.actionButtonFillText}>
+            {isExporting ? '…' : 'Guardar'}
+          </Text>
+        </Pressable>
+      </View>
     </View>
   )
 
@@ -307,11 +368,8 @@ const styles = StyleSheet.create({
     paddingBottom: 32
   },
   filterBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
     paddingHorizontal: 24,
-    paddingVertical: 16,
+    paddingVertical: 14,
     gap: 12,
     borderBottomWidth: 1,
     borderBottomColor: '#f0f0f0'
@@ -319,8 +377,7 @@ const styles = StyleSheet.create({
   dateRange: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    flex: 1
+    gap: 8
   },
   dateButton: {
     paddingHorizontal: 10,
@@ -342,19 +399,39 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#aaaaaa'
   },
-  exportButton: {
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 8,
-    backgroundColor: '#111111'
+  actions: {
+    flexDirection: 'row',
+    gap: 8
   },
-  exportButtonPressed: {
-    backgroundColor: '#333333'
+  actionButton: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 9,
+    borderRadius: 8
   },
-  exportButtonDisabled: {
+  actionButtonDisabled: {
     opacity: 0.5
   },
-  exportButtonText: {
+  actionButtonOutline: {
+    borderWidth: 1,
+    borderColor: '#cccccc'
+  },
+  actionButtonOutlinePressed: {
+    backgroundColor: '#f5f5f5'
+  },
+  actionButtonOutlineText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#333333'
+  },
+  actionButtonFill: {
+    backgroundColor: '#111111'
+  },
+  actionButtonFillPressed: {
+    backgroundColor: '#333333'
+  },
+  actionButtonFillText: {
     fontSize: 14,
     fontWeight: '600',
     color: '#ffffff'
