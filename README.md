@@ -48,3 +48,10 @@ Join our community of developers creating universal apps.
 
 - [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
 - [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+
+## License
+
+Copyright © 2026 Itziar Urbieta León. All rights reserved.
+
+This project is proprietary. Its source code may not be copied,
+modified, distributed, or used without explicit written permission.
