@@ -46,7 +46,7 @@ export default function InviteMemberScreen() {
             styles.roleButton,
             selectedRole === 'family' && styles.selectedRoleButton
           ]}
-          onPress={() => setSelectedRole('family')}
+          onPress={() => { setSelectedRole('family'); setGeneratedCode(null) }}
         >
           <Text style={styles.roleTitle}>Familiar</Text>
 
@@ -60,7 +60,7 @@ export default function InviteMemberScreen() {
             styles.roleButton,
             selectedRole === 'worker' && styles.selectedRoleButton
           ]}
-          onPress={() => setSelectedRole('worker')}
+          onPress={() => { setSelectedRole('worker'); setGeneratedCode(null) }}
         >
           <Text style={styles.roleTitle}>Cuidador</Text>
 
