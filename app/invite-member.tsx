@@ -1,3 +1,4 @@
+import * as Clipboard from 'expo-clipboard'
 import { useState } from 'react'
 import {
   ActivityIndicator,
@@ -15,6 +16,14 @@ export default function InviteMemberScreen() {
   const [selectedRole, setSelectedRole] = useState<InviteRole>('family')
 
   const [generatedCode, setGeneratedCode] = useState<string | null>(null)
+  const [copied, setCopied] = useState(false)
+
+  async function handleCopy() {
+    if (!generatedCode) return
+    await Clipboard.setStringAsync(generatedCode)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
 
   const createInviteMutation = useCreateFamilyInvite()
 
@@ -91,6 +100,19 @@ export default function InviteMemberScreen() {
             <Text selectable style={styles.code}>
               {generatedCode}
             </Text>
+
+            <Pressable
+              style={({ pressed }) => [
+                styles.copyButton,
+                copied && styles.copyButtonDone,
+                pressed && !copied && styles.copyButtonPressed
+              ]}
+              onPress={() => void handleCopy()}
+            >
+              <Text style={[styles.copyButtonText, copied && styles.copyButtonTextDone]}>
+                {copied ? 'Copiado ✓' : 'Copiar código'}
+              </Text>
+            </Pressable>
 
             <Text style={styles.codeHelp}>
               Es válido durante 24 horas y solo puede utilizarse una vez.
@@ -178,6 +200,29 @@ const styles = StyleSheet.create({
     fontSize: 34,
     fontWeight: '800',
     letterSpacing: 4
+  },
+  copyButton: {
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 10,
+    borderWidth: 1.5,
+    borderColor: '#D1D5DB',
+    backgroundColor: '#FFFFFF'
+  },
+  copyButtonPressed: {
+    backgroundColor: '#F3F4F6'
+  },
+  copyButtonDone: {
+    borderColor: '#BBF7D0',
+    backgroundColor: '#F0FDF4'
+  },
+  copyButtonText: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#111111'
+  },
+  copyButtonTextDone: {
+    color: '#15803D'
   },
   codeHelp: {
     fontSize: 14,
