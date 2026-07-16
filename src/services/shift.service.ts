@@ -111,6 +111,12 @@ export async function startShift(): Promise<Shift | null> {
   }
 }
 
+export async function getShiftHistory(): Promise<Shift[]> {
+  const { data, error } = await supabase.rpc('get_family_shift_history')
+  if (error) throw error
+  return (data ?? []) as Shift[]
+}
+
 export async function getActiveShifts(): Promise<Shift[]> {
   const { data, error } = await supabase.rpc('get_active_family_shifts')
   if (error) throw error

@@ -1,3 +1,4 @@
+import { router } from 'expo-router'
 import {
   Pressable,
   ScrollView,
@@ -31,7 +32,12 @@ export function FamilyHome({ currentFamily, onSignOut }: FamilyHomeProps) {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Trabajando ahora</Text>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Trabajando ahora</Text>
+            <Pressable hitSlop={12} onPress={() => router.push('/shift-history')}>
+              <Text style={styles.historialLink}>Historial</Text>
+            </Pressable>
+          </View>
           <ActiveWorkersSection />
         </View>
       </ScrollView>
@@ -75,8 +81,17 @@ const styles = StyleSheet.create({
   section: {
     gap: 12
   },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between'
+  },
   sectionTitle: {
     fontSize: 20,
     fontWeight: '700'
+  },
+  historialLink: {
+    fontSize: 15,
+    color: '#888888'
   }
 })
