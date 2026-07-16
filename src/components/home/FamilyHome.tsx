@@ -24,17 +24,26 @@ export function FamilyHome({ currentFamily, onSignOut }: FamilyHomeProps) {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.header}>
-          <Text style={styles.title}>{currentFamily.family.name}</Text>
+          <View style={styles.headerText}>
+            <Text style={styles.title}>{currentFamily.family.name}</Text>
+          </View>
 
-          <Pressable style={styles.signOutButton} onPress={onSignOut}>
-            <Text style={styles.signOutButtonText}>Salir</Text>
+          <Pressable
+            hitSlop={16}
+            style={({ pressed }) => [
+              styles.signOutButton,
+              pressed && styles.signOutButtonPressed
+            ]}
+            onPress={onSignOut}
+          >
+            <Text style={styles.signOutText}>Salir</Text>
           </Pressable>
         </View>
 
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Trabajando ahora</Text>
-            <Pressable hitSlop={12} onPress={() => router.push('/shift-history')}>
+            <Pressable hitSlop={16} onPress={() => router.push('/shift-history')}>
               <Text style={styles.historialLink}>Historial</Text>
             </Pressable>
           </View>
@@ -48,7 +57,7 @@ export function FamilyHome({ currentFamily, onSignOut }: FamilyHomeProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff'
+    backgroundColor: '#FFFFFF'
   },
   content: {
     flexGrow: 1,
@@ -57,29 +66,30 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: 16
+    alignItems: 'flex-start',
+    justifyContent: 'space-between'
+  },
+  headerText: {
+    flex: 1,
+    gap: 6
   },
   title: {
-    flex: 1,
     fontSize: 32,
-    fontWeight: '700'
+    fontWeight: '700',
+    color: '#111111'
   },
   signOutButton: {
-    minHeight: 44,
-    justifyContent: 'center',
-    paddingHorizontal: 18,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#111111'
+    paddingTop: 6
   },
-  signOutButtonText: {
+  signOutButtonPressed: {
+    opacity: 0.4
+  },
+  signOutText: {
     fontSize: 16,
-    fontWeight: '600'
+    color: '#888888'
   },
   section: {
-    gap: 12
+    gap: 14
   },
   sectionHeader: {
     flexDirection: 'row',
@@ -87,11 +97,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between'
   },
   sectionTitle: {
-    fontSize: 20,
-    fontWeight: '700'
+    fontSize: 22,
+    fontWeight: '700',
+    color: '#111111'
   },
   historialLink: {
-    fontSize: 15,
-    color: '#888888'
+    fontSize: 16,
+    color: '#555555'
   }
 })

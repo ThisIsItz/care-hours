@@ -38,19 +38,24 @@ export function AdminHome({
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView
-        contentContainerStyle={styles.dashboardContent}
+        contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.header}>
           <View style={styles.headerContent}>
             <Text style={styles.title}>{currentFamily.family.name}</Text>
-
             <Text style={styles.subtitle}>
               {members.length} {members.length === 1 ? 'miembro' : 'miembros'}
             </Text>
           </View>
 
-          <Pressable style={styles.inviteButton} onPress={onInvitePress}>
+          <Pressable
+            style={({ pressed }) => [
+              styles.inviteButton,
+              pressed && styles.inviteButtonPressed
+            ]}
+            onPress={onInvitePress}
+          >
             <Text style={styles.inviteButtonText}>Invitar</Text>
           </Pressable>
         </View>
@@ -58,7 +63,7 @@ export function AdminHome({
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Trabajando ahora</Text>
-            <Pressable hitSlop={12} onPress={() => router.push('/shift-history')}>
+            <Pressable hitSlop={16} onPress={() => router.push('/shift-history')}>
               <Text style={styles.historialLink}>Historial</Text>
             </Pressable>
           </View>
@@ -68,10 +73,16 @@ export function AdminHome({
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Personas</Text>
 
-          {areMembersLoading ? <ActivityIndicator /> : null}
+          {areMembersLoading ? (
+            <View style={styles.centered}>
+              <ActivityIndicator size="large" />
+            </View>
+          ) : null}
 
           {membersError ? (
-            <Text style={styles.errorText}>{errorMessage}</Text>
+            <View style={styles.errorCard}>
+              <Text style={styles.errorText}>{errorMessage}</Text>
+            </View>
           ) : null}
 
           {!areMembersLoading && !membersError
@@ -81,8 +92,14 @@ export function AdminHome({
             : null}
         </View>
 
-        <Pressable style={styles.secondaryButton} onPress={onSignOut}>
-          <Text style={styles.secondaryButtonText}>Cerrar sesión</Text>
+        <Pressable
+          style={({ pressed }) => [
+            styles.signOutButton,
+            pressed && styles.signOutButtonPressed
+          ]}
+          onPress={onSignOut}
+        >
+          <Text style={styles.signOutButtonText}>Cerrar sesión</Text>
         </Pressable>
       </ScrollView>
     </SafeAreaView>
@@ -92,12 +109,12 @@ export function AdminHome({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff'
+    backgroundColor: '#FFFFFF'
   },
-  dashboardContent: {
+  content: {
     flexGrow: 1,
     padding: 24,
-    gap: 28
+    gap: 32
   },
   header: {
     flexDirection: 'row',
@@ -107,19 +124,35 @@ const styles = StyleSheet.create({
   },
   headerContent: {
     flex: 1,
-    gap: 4
+    gap: 6
   },
   title: {
     fontSize: 32,
-    fontWeight: '700'
+    fontWeight: '700',
+    color: '#111111'
   },
   subtitle: {
     fontSize: 17,
     lineHeight: 24,
     color: '#555555'
   },
+  inviteButton: {
+    minHeight: 52,
+    justifyContent: 'center',
+    paddingHorizontal: 22,
+    borderRadius: 14,
+    backgroundColor: '#111111'
+  },
+  inviteButtonPressed: {
+    backgroundColor: '#333333'
+  },
+  inviteButtonText: {
+    color: '#FFFFFF',
+    fontSize: 17,
+    fontWeight: '600'
+  },
   section: {
-    gap: 12
+    gap: 14
   },
   sectionHeader: {
     flexDirection: 'row',
@@ -127,39 +160,43 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between'
   },
   sectionTitle: {
-    fontSize: 20,
-    fontWeight: '700'
+    fontSize: 22,
+    fontWeight: '700',
+    color: '#111111'
   },
   historialLink: {
-    fontSize: 15,
-    color: '#888888'
-  },
-  inviteButton: {
-    minHeight: 44,
-    justifyContent: 'center',
-    paddingHorizontal: 18,
-    borderRadius: 10,
-    backgroundColor: '#111111'
-  },
-  inviteButtonText: {
-    color: '#ffffff',
     fontSize: 16,
-    fontWeight: '600'
+    color: '#555555'
   },
-  secondaryButton: {
-    minHeight: 56,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 12,
+  centered: {
+    paddingVertical: 24,
+    alignItems: 'center'
+  },
+  errorCard: {
+    padding: 16,
+    borderRadius: 14,
+    backgroundColor: '#FEF2F2',
     borderWidth: 1,
-    borderColor: '#111111'
-  },
-  secondaryButtonText: {
-    fontSize: 18,
-    fontWeight: '600'
+    borderColor: '#FECACA'
   },
   errorText: {
-    fontSize: 14,
-    color: '#b42318'
+    fontSize: 16,
+    color: '#B91C1C'
+  },
+  signOutButton: {
+    minHeight: 60,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 16,
+    borderWidth: 1.5,
+    borderColor: '#D1D5DB'
+  },
+  signOutButtonPressed: {
+    backgroundColor: '#F9FAFB'
+  },
+  signOutButtonText: {
+    fontSize: 19,
+    fontWeight: '600',
+    color: '#111111'
   }
 })

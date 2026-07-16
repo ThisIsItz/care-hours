@@ -33,23 +33,19 @@ export default function SignUpScreen() {
     }
 
     if (password.length < 8) {
-      Alert.alert(
-        'Contraseña demasiado corta',
-        'Utiliza al menos 8 caracteres.'
-      )
+      Alert.alert('Contraseña demasiado corta', 'Utiliza al menos 8 caracteres.')
       return
     }
 
     try {
       setIsSubmitting(true)
+      setFormError(null)
 
       const { data, error } = await supabase.auth.signUp({
         email: normalizedEmail,
         password,
         options: {
-          data: {
-            full_name: normalizedName
-          }
+          data: { full_name: normalizedName }
         }
       })
 
@@ -59,9 +55,7 @@ export default function SignUpScreen() {
       }
 
       if (!data.session) {
-        setSuccessMessage(
-          'Cuenta creada. Revisa tu correo para confirmar la cuenta.'
-        )
+        setSuccessMessage('Cuenta creada. Revisa tu correo para confirmar la cuenta.')
         return
       }
 
@@ -82,10 +76,11 @@ export default function SignUpScreen() {
         <ScrollView
           contentContainerStyle={styles.content}
           keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
         >
-          <View style={styles.form}>
-            <Text style={styles.title}>Crear una cuenta</Text>
+          <Text style={styles.title}>Crear una cuenta</Text>
 
+          <View style={styles.form}>
             <FormInput
               label="Nombre"
               value={name}
@@ -93,6 +88,7 @@ export default function SignUpScreen() {
               autoCapitalize="words"
               autoComplete="name"
               textContentType="name"
+              placeholder="Tu nombre completo"
             />
 
             <FormInput
@@ -102,9 +98,10 @@ export default function SignUpScreen() {
               keyboardType="email-address"
               autoComplete="email"
               textContentType="emailAddress"
+              placeholder="nombre@ejemplo.com"
             />
 
-            <View>
+            <View style={styles.passwordField}>
               <FormInput
                 label="Contraseña"
                 value={password}
@@ -112,16 +109,32 @@ export default function SignUpScreen() {
                 secureTextEntry
                 autoComplete="new-password"
                 textContentType="newPassword"
+                placeholder="Mínimo 8 caracteres"
               />
-              <Text style={styles.helperText}>Al menos 8 caracteres</Text>
+              <Text style={styles.helperText}>La contraseña debe tener al menos 8 caracteres</Text>
             </View>
+          </View>
+
+          <View style={styles.actions}>
+            {formError ? (
+              <View style={styles.errorBox}>
+                <Text style={styles.errorText}>{formError}</Text>
+              </View>
+            ) : null}
+
+            {successMessage ? (
+              <View style={styles.successBox}>
+                <Text style={styles.successText}>{successMessage}</Text>
+              </View>
+            ) : null}
 
             <Pressable
               accessibilityRole="button"
               disabled={isSubmitting}
-              style={[
+              style={({ pressed }) => [
                 styles.primaryButton,
-                isSubmitting && styles.disabledButton
+                isSubmitting && styles.disabledButton,
+                pressed && styles.primaryButtonPressed
               ]}
               onPress={() => void handleSignUp()}
             >
@@ -129,18 +142,13 @@ export default function SignUpScreen() {
                 {isSubmitting ? 'Creando cuenta…' : 'Crear cuenta'}
               </Text>
             </Pressable>
-            {formError ? (
-              <Text style={styles.errorText}>{formError}</Text>
-            ) : null}
 
-            {successMessage ? (
-              <Text style={styles.successText}>{successMessage}</Text>
-            ) : null}
             <Pressable
               accessibilityRole="button"
+              style={styles.linkRow}
               onPress={() => router.navigate('/sign-in')}
             >
-              <Text style={styles.link}>Ya tengo una cuenta</Text>
+              <Text style={styles.linkText}>Ya tengo una cuenta</Text>
             </Pressable>
           </View>
         </ScrollView>
@@ -152,7 +160,7 @@ export default function SignUpScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff'
+    backgroundColor: '#FFFFFF'
   },
   keyboardContainer: {
     flex: 1
@@ -160,49 +168,74 @@ const styles = StyleSheet.create({
   content: {
     flexGrow: 1,
     justifyContent: 'center',
-    padding: 24
+    padding: 28,
+    gap: 32
+  },
+  title: {
+    fontSize: 34,
+    fontWeight: '700',
+    color: '#111111'
   },
   form: {
     gap: 20
   },
-  title: {
-    marginBottom: 12,
-    fontSize: 32,
-    fontWeight: '700'
+  passwordField: {
+    gap: 8
+  },
+  helperText: {
+    fontSize: 15,
+    color: '#6B7280',
+    paddingHorizontal: 2
+  },
+  actions: {
+    gap: 14
+  },
+  errorBox: {
+    padding: 16,
+    borderRadius: 12,
+    backgroundColor: '#FEF2F2',
+    borderWidth: 1,
+    borderColor: '#FECACA'
+  },
+  errorText: {
+    fontSize: 16,
+    color: '#B91C1C'
+  },
+  successBox: {
+    padding: 16,
+    borderRadius: 12,
+    backgroundColor: '#F0FDF4',
+    borderWidth: 1,
+    borderColor: '#BBF7D0'
+  },
+  successText: {
+    fontSize: 16,
+    color: '#15803D'
   },
   primaryButton: {
-    minHeight: 56,
+    minHeight: 64,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 12,
+    borderRadius: 16,
     backgroundColor: '#111111'
+  },
+  primaryButtonPressed: {
+    backgroundColor: '#333333'
   },
   disabledButton: {
     opacity: 0.5
   },
   primaryButtonText: {
-    color: '#ffffff',
-    fontSize: 18,
-    fontWeight: '600'
+    color: '#FFFFFF',
+    fontSize: 20,
+    fontWeight: '700'
   },
-  link: {
-    paddingVertical: 10,
-    textAlign: 'center',
-    fontSize: 16,
-    textDecorationLine: 'underline'
+  linkRow: {
+    alignItems: 'center',
+    paddingVertical: 12
   },
-  helperText: {
-    marginTop: 4,
-    fontSize: 13,
-    color: '#6b7280'
-  },
-  errorText: {
-    fontSize: 14,
-    color: '#b42318'
-  },
-
-  successText: {
-    fontSize: 14,
-    color: '#067647'
+  linkText: {
+    fontSize: 17,
+    color: '#555555'
   }
 })

@@ -277,7 +277,9 @@ export default function ShiftHistoryScreen() {
     return (
       <SafeAreaView style={styles.centered} edges={['bottom']}>
         {filterBar}
-        <Text style={styles.errorText}>{message}</Text>
+        <View style={styles.errorCard}>
+          <Text style={styles.errorText}>{message}</Text>
+        </View>
       </SafeAreaView>
     )
   }
@@ -290,10 +292,10 @@ export default function ShiftHistoryScreen() {
           <Pressable style={styles.modalOverlay} onPress={() => setActivePicker(null)} />
           <View style={styles.pickerSheet}>
             <View style={styles.pickerToolbar}>
-              <Pressable hitSlop={12} onPress={() => setActivePicker(null)}>
+              <Pressable hitSlop={16} onPress={() => setActivePicker(null)}>
                 <Text style={styles.pickerCancel}>Cancelar</Text>
               </Pressable>
-              <Pressable hitSlop={12} onPress={confirmIOSPicker}>
+              <Pressable hitSlop={16} onPress={confirmIOSPicker}>
                 <Text style={styles.pickerDone}>Listo</Text>
               </Pressable>
             </View>
@@ -356,74 +358,75 @@ export default function ShiftHistoryScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff'
+    backgroundColor: '#FFFFFF'
   },
   centered: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#FFFFFF',
     padding: 24,
     gap: 24
   },
   listContent: {
-    paddingBottom: 32
+    paddingBottom: 40
   },
   filterBar: {
     paddingHorizontal: 24,
-    paddingVertical: 14,
-    gap: 12,
+    paddingVertical: 18,
+    gap: 14,
     borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0'
+    borderBottomColor: '#E5E7EB'
   },
   dateRange: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8
+    gap: 10
   },
   dateButton: {
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#e0e0e0',
-    backgroundColor: '#fafafa'
+    minHeight: 52,
+    paddingHorizontal: 16,
+    justifyContent: 'center',
+    borderRadius: 12,
+    borderWidth: 1.5,
+    borderColor: '#D1D5DB',
+    backgroundColor: '#FAFAFA'
   },
   dateButtonPressed: {
-    backgroundColor: '#f0f0f0'
+    backgroundColor: '#F3F4F6'
   },
   dateButtonText: {
-    fontSize: 14,
-    fontWeight: '500',
+    fontSize: 16,
+    fontWeight: '600',
     color: '#111111'
   },
   dateRangeDash: {
-    fontSize: 14,
-    color: '#aaaaaa'
+    fontSize: 16,
+    color: '#9CA3AF'
   },
   actions: {
     flexDirection: 'row',
-    gap: 8
+    gap: 10
   },
   actionButton: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 9,
-    borderRadius: 8
+    minHeight: 52,
+    borderRadius: 12
   },
   actionButtonDisabled: {
     opacity: 0.5
   },
   actionButtonOutline: {
-    borderWidth: 1,
-    borderColor: '#cccccc'
+    borderWidth: 1.5,
+    borderColor: '#D1D5DB'
   },
   actionButtonOutlinePressed: {
-    backgroundColor: '#f5f5f5'
+    backgroundColor: '#F9FAFB'
   },
   actionButtonOutlineText: {
-    fontSize: 14,
+    fontSize: 17,
     fontWeight: '600',
-    color: '#333333'
+    color: '#111111'
   },
   actionButtonFill: {
     backgroundColor: '#111111'
@@ -432,33 +435,34 @@ const styles = StyleSheet.create({
     backgroundColor: '#333333'
   },
   actionButtonFillText: {
-    fontSize: 14,
+    fontSize: 17,
     fontWeight: '600',
-    color: '#ffffff'
+    color: '#FFFFFF'
   },
   sectionHeader: {
-    paddingTop: 20,
-    paddingBottom: 6,
+    paddingTop: 28,
+    paddingBottom: 8,
     paddingHorizontal: 24,
-    fontSize: 13,
+    fontSize: 15,
     fontWeight: '600',
-    color: '#888888',
+    color: '#555555',
     textTransform: 'capitalize'
   },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 12,
+    paddingVertical: 16,
     paddingHorizontal: 24,
     gap: 16
   },
   rowLeft: {
-    gap: 2
+    gap: 4
   },
   workerName: {
-    fontSize: 15,
-    fontWeight: '600'
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#111111'
   },
   times: {
     flexDirection: 'row',
@@ -466,36 +470,43 @@ const styles = StyleSheet.create({
     gap: 6
   },
   time: {
-    fontSize: 15,
+    fontSize: 17,
     color: '#444444'
   },
   timeSeparator: {
-    fontSize: 13,
-    color: '#aaaaaa'
+    fontSize: 15,
+    color: '#9CA3AF'
   },
   duration: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: '#333333'
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#111111'
   },
   separator: {
     height: 1,
-    backgroundColor: '#f0f0f0',
+    backgroundColor: '#F3F4F6',
     marginHorizontal: 24
   },
   sectionSeparator: {
     height: 0
   },
   emptyText: {
-    fontSize: 16,
+    fontSize: 18,
     color: '#555555',
     textAlign: 'center',
-    paddingTop: 48,
+    paddingTop: 56,
     paddingHorizontal: 24
   },
+  errorCard: {
+    padding: 16,
+    borderRadius: 14,
+    backgroundColor: '#FEF2F2',
+    borderWidth: 1,
+    borderColor: '#FECACA'
+  },
   errorText: {
-    fontSize: 14,
-    color: '#b42318',
+    fontSize: 16,
+    color: '#B91C1C',
     textAlign: 'center'
   },
   // iOS modal picker
@@ -504,27 +515,27 @@ const styles = StyleSheet.create({
     backgroundColor: '#00000040'
   },
   pickerSheet: {
-    backgroundColor: '#ffffff',
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
-    paddingBottom: 24
+    backgroundColor: '#FFFFFF',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    paddingBottom: 32
   },
   pickerToolbar: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 14,
+    paddingHorizontal: 24,
+    paddingVertical: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0'
+    borderBottomColor: '#E5E7EB'
   },
   pickerCancel: {
-    fontSize: 16,
+    fontSize: 17,
     color: '#888888'
   },
   pickerDone: {
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: 17,
+    fontWeight: '700',
     color: '#111111'
   }
 })

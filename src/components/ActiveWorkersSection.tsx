@@ -43,17 +43,29 @@ export function ActiveWorkersSection() {
   }, [shifts])
 
   if (isLoading) {
-    return <ActivityIndicator />
+    return (
+      <View style={styles.centered}>
+        <ActivityIndicator size="large" />
+      </View>
+    )
   }
 
   if (error) {
     const message =
       error instanceof Error ? error.message : 'No se pudo cargar la información.'
-    return <Text style={styles.errorText}>{message}</Text>
+    return (
+      <View style={styles.errorCard}>
+        <Text style={styles.errorText}>{message}</Text>
+      </View>
+    )
   }
 
   if (!shifts?.length) {
-    return <Text style={styles.emptyText}>Nadie está trabajando ahora mismo.</Text>
+    return (
+      <View style={styles.emptyCard}>
+        <Text style={styles.emptyText}>Nadie está trabajando ahora mismo.</Text>
+      </View>
+    )
   }
 
   return (
@@ -64,19 +76,21 @@ export function ActiveWorkersSection() {
 
         return (
           <View key={shift.id} style={styles.card}>
-            <View style={styles.statusRow}>
-              <View style={styles.activeIndicator} />
+            <View style={styles.cardHeader}>
+              <View style={styles.activeDot} />
               <Text style={styles.workerName}>{workerName}</Text>
             </View>
 
             <View style={styles.details}>
-              <View>
+              <View style={styles.detailBlock}>
                 <Text style={styles.detailLabel}>Entrada</Text>
                 <Text style={styles.detailValue}>{formatTime(shift.started_at)}</Text>
               </View>
 
-              <View>
-                <Text style={styles.detailLabel}>Tiempo trabajado</Text>
+              <View style={styles.detailDivider} />
+
+              <View style={styles.detailBlock}>
+                <Text style={styles.detailLabel}>Llevas</Text>
                 <Text style={styles.detailValue}>{formatDuration(shift.started_at, now)}</Text>
               </View>
             </View>
@@ -88,51 +102,88 @@ export function ActiveWorkersSection() {
 }
 
 const styles = StyleSheet.create({
+  centered: {
+    paddingVertical: 24,
+    alignItems: 'center'
+  },
+  errorCard: {
+    padding: 16,
+    borderRadius: 14,
+    backgroundColor: '#FEF2F2',
+    borderWidth: 1,
+    borderColor: '#FECACA'
+  },
+  errorText: {
+    fontSize: 16,
+    color: '#B91C1C'
+  },
+  emptyCard: {
+    padding: 20,
+    borderRadius: 16,
+    borderWidth: 1.5,
+    borderColor: '#E5E7EB',
+    alignItems: 'center'
+  },
+  emptyText: {
+    fontSize: 17,
+    color: '#555555',
+    textAlign: 'center'
+  },
   list: {
     gap: 12
   },
   card: {
-    padding: 16,
-    borderWidth: 1,
-    borderColor: '#e5e5e5',
-    borderRadius: 12,
-    gap: 12
+    borderRadius: 16,
+    borderWidth: 1.5,
+    borderColor: '#BBF7D0',
+    backgroundColor: '#F0FDF4',
+    overflow: 'hidden'
   },
-  statusRow: {
+  cardHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8
+    gap: 10,
+    padding: 18,
+    paddingBottom: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: '#BBF7D0'
   },
-  activeIndicator: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: '#16803c'
+  activeDot: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: '#15803D'
   },
   workerName: {
-    fontSize: 16,
-    fontWeight: '600'
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#14532D'
   },
   details: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: 16
+    alignItems: 'center',
+    padding: 18,
+    paddingTop: 16
+  },
+  detailBlock: {
+    flex: 1,
+    gap: 4
+  },
+  detailDivider: {
+    width: 1,
+    height: 44,
+    backgroundColor: '#BBF7D0',
+    marginHorizontal: 16
   },
   detailLabel: {
-    marginBottom: 4,
-    fontSize: 13,
-    color: '#666666'
+    fontSize: 14,
+    color: '#166534',
+    fontWeight: '500'
   },
   detailValue: {
-    fontSize: 18,
-    fontWeight: '700'
-  },
-  emptyText: {
-    fontSize: 15,
-    color: '#555555'
-  },
-  errorText: {
-    fontSize: 14,
-    color: '#b42318'
+    fontSize: 26,
+    fontWeight: '800',
+    color: '#14532D',
+    letterSpacing: -0.3
   }
 })

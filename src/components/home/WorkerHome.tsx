@@ -31,7 +31,7 @@ export function WorkerHome({ currentFamily, onSignOut }: WorkerHomeProps) {
           </View>
 
           <Pressable
-            hitSlop={12}
+            hitSlop={16}
             style={({ pressed }) => [
               styles.signOutButton,
               pressed && styles.signOutButtonPressed
@@ -46,7 +46,7 @@ export function WorkerHome({ currentFamily, onSignOut }: WorkerHomeProps) {
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Mi turno</Text>
             <Pressable
-              hitSlop={12}
+              hitSlop={16}
               onPress={() => router.push('/shift-history')}
             >
               <Text style={styles.historialLink}>Historial</Text>
@@ -62,12 +62,12 @@ export function WorkerHome({ currentFamily, onSignOut }: WorkerHomeProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff'
+    backgroundColor: '#FFFFFF'
   },
   content: {
     flexGrow: 1,
     padding: 24,
-    gap: 24
+    gap: 28
   },
   header: {
     flexDirection: 'row',
@@ -75,12 +75,13 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between'
   },
   headerText: {
-    gap: 4,
+    gap: 6,
     flex: 1
   },
   title: {
     fontSize: 32,
-    fontWeight: '700'
+    fontWeight: '700',
+    color: '#111111'
   },
   subtitle: {
     fontSize: 17,
@@ -94,11 +95,11 @@ const styles = StyleSheet.create({
     opacity: 0.4
   },
   signOutText: {
-    fontSize: 15,
+    fontSize: 16,
     color: '#888888'
   },
   section: {
-    gap: 12
+    gap: 14
   },
   sectionHeader: {
     flexDirection: 'row',
@@ -106,11 +107,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between'
   },
   sectionTitle: {
-    fontSize: 20,
-    fontWeight: '700'
+    fontSize: 22,
+    fontWeight: '700',
+    color: '#111111'
   },
   historialLink: {
-    fontSize: 15,
-    color: '#888888'
+    fontSize: 16,
+    color: '#555555'
   }
 })

@@ -33,34 +33,36 @@ const styles = StyleSheet.create({
   card: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 14,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: '#e5e5e5',
-    borderRadius: 12
+    gap: 16,
+    padding: 18,
+    borderWidth: 1.5,
+    borderColor: '#E5E7EB',
+    borderRadius: 16
   },
   avatar: {
-    width: 44,
-    height: 44,
+    width: 52,
+    height: 52,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 22,
-    backgroundColor: '#eeeeee'
+    borderRadius: 26,
+    backgroundColor: '#F3F4F6'
   },
   avatarText: {
-    fontSize: 18,
-    fontWeight: '700'
+    fontSize: 22,
+    fontWeight: '700',
+    color: '#111111'
   },
   content: {
     flex: 1,
-    gap: 3
+    gap: 4
   },
   name: {
-    fontSize: 17,
-    fontWeight: '600'
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#111111'
   },
   role: {
-    fontSize: 14,
-    color: '#666666'
+    fontSize: 16,
+    color: '#555555'
   }
 })

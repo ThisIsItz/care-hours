@@ -9,8 +9,8 @@ import {
   Text,
   View
 } from 'react-native'
-
 import { SafeAreaView } from 'react-native-safe-area-context'
+
 import { FormInput } from '../src/components/FormInput'
 import { supabase } from '../src/lib/supabase'
 
@@ -57,46 +57,52 @@ export default function SignInScreen() {
         <View style={styles.content}>
           <Text style={styles.title}>Iniciar sesión</Text>
 
-          <FormInput
-            label="Correo electrónico"
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-            autoComplete="email"
-            textContentType="emailAddress"
-            placeholder="nombre@ejemplo.com"
-          />
+          <View style={styles.form}>
+            <FormInput
+              label="Correo electrónico"
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+              autoComplete="email"
+              textContentType="emailAddress"
+              placeholder="nombre@ejemplo.com"
+            />
 
-          <FormInput
-            label="Contraseña"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-            autoComplete="password"
-            textContentType="password"
-            placeholder="Tu contraseña"
-          />
+            <FormInput
+              label="Contraseña"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+              autoComplete="password"
+              textContentType="password"
+              placeholder="Tu contraseña"
+            />
+          </View>
 
-          <Pressable
-            accessibilityRole="button"
-            disabled={isSubmitting}
-            style={[
-              styles.primaryButton,
-              isSubmitting && styles.disabledButton
-            ]}
-            onPress={() => void handleSignIn()}
-          >
-            <Text style={styles.primaryButtonText}>
-              {isSubmitting ? 'Entrando…' : 'Iniciar sesión'}
-            </Text>
-          </Pressable>
+          <View style={styles.actions}>
+            <Pressable
+              accessibilityRole="button"
+              disabled={isSubmitting}
+              style={({ pressed }) => [
+                styles.primaryButton,
+                isSubmitting && styles.disabledButton,
+                pressed && styles.primaryButtonPressed
+              ]}
+              onPress={() => void handleSignIn()}
+            >
+              <Text style={styles.primaryButtonText}>
+                {isSubmitting ? 'Entrando…' : 'Iniciar sesión'}
+              </Text>
+            </Pressable>
 
-          <Pressable
-            accessibilityRole="button"
-            onPress={() => router.navigate('/sign-up')}
-          >
-            <Text style={styles.link}>¿No tienes cuenta? Regístrate</Text>
-          </Pressable>
+            <Pressable
+              accessibilityRole="button"
+              style={styles.linkRow}
+              onPress={() => router.navigate('/sign-up')}
+            >
+              <Text style={styles.linkText}>¿No tienes cuenta? Regístrate</Text>
+            </Pressable>
+          </View>
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -106,7 +112,7 @@ export default function SignInScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff'
+    backgroundColor: '#FFFFFF'
   },
   keyboardContainer: {
     flex: 1
@@ -114,33 +120,44 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     justifyContent: 'center',
-    padding: 24,
-    gap: 20
+    padding: 28,
+    gap: 32
   },
   title: {
-    marginBottom: 12,
-    fontSize: 32,
-    fontWeight: '700'
+    fontSize: 34,
+    fontWeight: '700',
+    color: '#111111'
+  },
+  form: {
+    gap: 20
+  },
+  actions: {
+    gap: 16
   },
   primaryButton: {
-    minHeight: 56,
+    minHeight: 64,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 12,
+    borderRadius: 16,
     backgroundColor: '#111111'
+  },
+  primaryButtonPressed: {
+    backgroundColor: '#333333'
   },
   disabledButton: {
     opacity: 0.5
   },
   primaryButtonText: {
-    color: '#ffffff',
-    fontSize: 18,
-    fontWeight: '600'
+    color: '#FFFFFF',
+    fontSize: 20,
+    fontWeight: '700'
   },
-  link: {
-    paddingVertical: 10,
-    textAlign: 'center',
-    fontSize: 16,
-    textDecorationLine: 'underline'
+  linkRow: {
+    alignItems: 'center',
+    paddingVertical: 12
+  },
+  linkText: {
+    fontSize: 17,
+    color: '#555555'
   }
 })
