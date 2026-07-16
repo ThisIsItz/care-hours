@@ -126,10 +126,14 @@ export function WorkerShiftCard() {
 
         <Pressable
           accessibilityRole="button"
+          accessibilityHint="Inicia tu turno de trabajo"
+          android_ripple={{ color: '#ffffff22' }}
           disabled={startShiftMutation.isPending}
-          style={[
+          hitSlop={8}
+          style={({ pressed }) => [
             styles.startButton,
-            startShiftMutation.isPending && styles.disabledButton
+            startShiftMutation.isPending && styles.disabledButton,
+            pressed && styles.startButtonPressed
           ]}
           onPress={() => void handleStartShift()}
         >
@@ -169,10 +173,14 @@ export function WorkerShiftCard() {
 
       <Pressable
         accessibilityRole="button"
+        accessibilityHint="Registra la salida del turno"
+        android_ripple={{ color: '#11111111' }}
         disabled={endShiftMutation.isPending}
-        style={[
+        hitSlop={8}
+        style={({ pressed }) => [
           styles.endButton,
-          endShiftMutation.isPending && styles.disabledButton
+          endShiftMutation.isPending && styles.disabledButton,
+          pressed && styles.endButtonPressed
         ]}
         onPress={confirmEndShift}
       >
@@ -239,7 +247,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 14,
-    backgroundColor: '#111111'
+    backgroundColor: '#111111',
+    borderWidth: 2,
+    borderColor: '#111111'
+  },
+  startButtonPressed: {
+    backgroundColor: '#2d2d2d',
+    borderColor: '#2d2d2d',
+    transform: [{ scale: 0.97 }],
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 4
   },
   startButtonText: {
     color: '#ffffff',
@@ -252,7 +272,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderWidth: 2,
     borderColor: '#111111',
-    borderRadius: 14
+    borderRadius: 14,
+    backgroundColor: '#ffffff'
+  },
+  endButtonPressed: {
+    backgroundColor: '#f3f4f6',
+    transform: [{ scale: 0.97 }],
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 4
   },
   endButtonText: {
     fontSize: 20,

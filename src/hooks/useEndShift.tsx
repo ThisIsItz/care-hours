@@ -11,6 +11,8 @@ export function useEndShift() {
     mutationFn: endShift,
 
     onSuccess: async () => {
+      queryClient.setQueryData(currentShiftQueryKey, null)
+
       await queryClient.invalidateQueries({
         queryKey: currentShiftQueryKey
       })

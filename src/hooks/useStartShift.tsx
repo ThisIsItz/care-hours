@@ -10,7 +10,9 @@ export function useStartShift() {
   return useMutation({
     mutationFn: startShift,
 
-    onSuccess: async () => {
+    onSuccess: async (shift) => {
+      queryClient.setQueryData(currentShiftQueryKey, shift)
+
       await queryClient.invalidateQueries({
         queryKey: currentShiftQueryKey
       })
