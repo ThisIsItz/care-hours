@@ -7,7 +7,7 @@ export default function WelcomeScreen() {
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
         <View style={styles.hero}>
-          <Text style={styles.title}>Care Hours</Text>
+          <Text style={styles.title}>FichApp</Text>
           <Text style={styles.subtitle}>
             Registra y consulta las horas de cuidado de forma sencilla.
           </Text>
@@ -16,7 +16,10 @@ export default function WelcomeScreen() {
         <View style={styles.buttons}>
           <Pressable
             accessibilityRole="button"
-            style={({ pressed }) => [styles.primaryButton, pressed && styles.primaryButtonPressed]}
+            style={({ pressed }) => [
+              styles.primaryButton,
+              pressed && styles.primaryButtonPressed
+            ]}
             onPress={() => router.navigate('/sign-in')}
           >
             <Text style={styles.primaryButtonText}>Iniciar sesión</Text>
@@ -24,7 +27,10 @@ export default function WelcomeScreen() {
 
           <Pressable
             accessibilityRole="button"
-            style={({ pressed }) => [styles.secondaryButton, pressed && styles.secondaryButtonPressed]}
+            style={({ pressed }) => [
+              styles.secondaryButton,
+              pressed && styles.secondaryButtonPressed
+            ]}
             onPress={() => router.navigate('/sign-up')}
           >
             <Text style={styles.secondaryButtonText}>Crear una cuenta</Text>
