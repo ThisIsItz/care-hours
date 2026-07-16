@@ -1,5 +1,6 @@
 import { router } from 'expo-router'
 import {
+  ActivityIndicator,
   Alert,
   Pressable,
   ScrollView,
@@ -10,20 +11,35 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 import { ActiveWorkersSection } from '@/src/components/ActiveWorkersSection'
-import type { CurrentFamily } from '@/src/types/family'
+import { FamilyMemberCard } from '@/src/components/FamilyMemberCard'
+import type { CurrentFamily, FamilyMember } from '@/src/types/family'
 
 type FamilyHomeProps = {
   currentFamily: CurrentFamily
+  members: FamilyMember[]
+  areMembersLoading: boolean
+  membersError: unknown
   onSignOut: () => void
 }
 
-export function FamilyHome({ currentFamily, onSignOut }: FamilyHomeProps) {
+export function FamilyHome({
+  currentFamily,
+  members,
+  areMembersLoading,
+  membersError,
+  onSignOut
+}: FamilyHomeProps) {
   function confirmSignOut() {
     Alert.alert('Cerrar sesión', '¿Seguro que quieres salir?', [
       { text: 'Cancelar', style: 'cancel' },
       { text: 'Cerrar sesión', style: 'destructive', onPress: onSignOut }
     ])
   }
+
+  const errorMessage =
+    membersError instanceof Error
+      ? membersError.message
+      : 'No se pudieron cargar los miembros.'
 
   return (
     <SafeAreaView style={styles.container}>
@@ -43,6 +59,28 @@ export function FamilyHome({ currentFamily, onSignOut }: FamilyHomeProps) {
             </Pressable>
           </View>
           <ActiveWorkersSection />
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Personas</Text>
+
+          {areMembersLoading ? (
+            <View style={styles.centered}>
+              <ActivityIndicator size="large" />
+            </View>
+          ) : null}
+
+          {membersError ? (
+            <View style={styles.errorCard}>
+              <Text style={styles.errorText}>{errorMessage}</Text>
+            </View>
+          ) : null}
+
+          {!areMembersLoading && !membersError
+            ? members.map((member) => (
+                <FamilyMemberCard key={member.id} member={member} />
+              ))
+            : null}
         </View>
       </ScrollView>
 
@@ -69,7 +107,7 @@ const styles = StyleSheet.create({
   content: {
     flexGrow: 1,
     padding: 24,
-    gap: 28
+    gap: 32
   },
   header: {
     gap: 6
@@ -95,6 +133,21 @@ const styles = StyleSheet.create({
   historialLink: {
     fontSize: 16,
     color: '#555555'
+  },
+  centered: {
+    paddingVertical: 24,
+    alignItems: 'center'
+  },
+  errorCard: {
+    padding: 16,
+    borderRadius: 14,
+    backgroundColor: '#FEF2F2',
+    borderWidth: 1,
+    borderColor: '#FECACA'
+  },
+  errorText: {
+    fontSize: 16,
+    color: '#B91C1C'
   },
   footer: {
     padding: 24,

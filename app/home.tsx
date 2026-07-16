@@ -124,6 +124,9 @@ export default function HomeScreen() {
   return (
     <FamilyHome
       currentFamily={currentFamily}
+      members={members}
+      areMembersLoading={areMembersLoading}
+      membersError={membersError}
       onSignOut={() => void handleSignOut()}
     />
   )
