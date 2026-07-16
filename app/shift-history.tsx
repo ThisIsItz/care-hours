@@ -16,6 +16,7 @@ import {
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
+import { useCurrentFamily } from '@/src/hooks/useCurrentFamily'
 import { useFamilyMembers } from '@/src/hooks/useFamilyMembers'
 import { useShiftHistory } from '@/src/hooks/useShiftHistory'
 import type { Shift } from '@/src/types/shift'
@@ -65,7 +66,9 @@ function ShiftRow({ shift, workerName }: ShiftRowProps) {
           <Text style={styles.time}>{formatTime(shift.ended_at!)}</Text>
         </View>
       </View>
-      <Text style={styles.duration}>{formatDuration(shift.started_at, shift.ended_at!)}</Text>
+      <Text style={styles.duration}>
+        {formatDuration(shift.started_at, shift.ended_at!)}
+      </Text>
     </View>
   )
 }
@@ -86,6 +89,8 @@ function endOfToday(): Date {
 export default function ShiftHistoryScreen() {
   const { data: shifts, isLoading, error } = useShiftHistory()
   const { data: members } = useFamilyMembers()
+  const { data: currentFamily } = useCurrentFamily()
+  const canExport = currentFamily?.membership.role !== 'worker'
 
   const [startDate, setStartDate] = useState<Date>(startOfCurrentMonth)
   const [endDate, setEndDate] = useState<Date>(endOfToday)
@@ -141,7 +146,9 @@ export default function ShiftHistoryScreen() {
     const rows = filteredShifts.map((shift) => {
       const member = members?.find((m) => m.user_id === shift.worker_id)
       const name = (member?.full_name ?? 'Trabajador').replace(/"/g, '""')
-      const date = new Intl.DateTimeFormat('es-ES').format(new Date(shift.started_at))
+      const date = new Intl.DateTimeFormat('es-ES').format(
+        new Date(shift.started_at)
+      )
       const start = formatTime(shift.started_at)
       const end = formatTime(shift.ended_at!)
       const duration = formatDuration(shift.started_at, shift.ended_at!)
@@ -156,7 +163,9 @@ export default function ShiftHistoryScreen() {
       .map((shift) => {
         const member = members?.find((m) => m.user_id === shift.worker_id)
         const name = member?.full_name ?? 'Trabajador'
-        const date = new Intl.DateTimeFormat('es-ES').format(new Date(shift.started_at))
+        const date = new Intl.DateTimeFormat('es-ES').format(
+          new Date(shift.started_at)
+        )
         const start = formatTime(shift.started_at)
         const end = formatTime(shift.ended_at!)
         const duration = formatDuration(shift.started_at, shift.ended_at!)
@@ -233,47 +242,76 @@ export default function ShiftHistoryScreen() {
       Alert.alert('Sin datos', 'No hay turnos en el rango seleccionado.')
       return
     }
-    Alert.alert('Compartir como', '¿En qué formato quieres exportar los turnos?', [
-      { text: 'Cancelar', style: 'cancel' },
-      { text: 'CSV', onPress: () => { void shareAsCSV() } },
-      { text: 'PDF', onPress: () => { void shareAsPDF() } }
-    ])
+    Alert.alert(
+      'Compartir como',
+      '¿En qué formato quieres exportar los turnos?',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'CSV',
+          onPress: () => {
+            void shareAsCSV()
+          }
+        },
+        {
+          text: 'PDF',
+          onPress: () => {
+            void shareAsPDF()
+          }
+        }
+      ]
+    )
   }
 
   const filterBar = (
     <View style={styles.filterBar}>
-      <View style={styles.dateRange}>
-        <Pressable
-          style={({ pressed }) => [styles.dateButton, pressed && styles.dateButtonPressed]}
-          onPress={() => openPicker('start')}
-        >
-          <Text style={styles.dateButtonText}>{formatDateLabel(startDate)}</Text>
-        </Pressable>
-        <Text style={styles.dateRangeDash}>—</Text>
-        <Pressable
-          style={({ pressed }) => [styles.dateButton, pressed && styles.dateButtonPressed]}
-          onPress={() => openPicker('end')}
-        >
-          <Text style={styles.dateButtonText}>{formatDateLabel(endDate)}</Text>
-        </Pressable>
+      <Text style={styles.filterTitle}>Período</Text>
+
+      <View style={styles.dateFields}>
+        <View style={styles.dateField}>
+          <Text style={styles.dateFieldLabel}>Desde</Text>
+          <Pressable
+            style={({ pressed }) => [
+              styles.dateButton,
+              pressed && styles.dateButtonPressed
+            ]}
+            onPress={() => openPicker('start')}
+          >
+            <Text style={styles.dateButtonText}>{formatDateLabel(startDate)}</Text>
+            <Text style={styles.dateButtonHint}>Toca para cambiar</Text>
+          </Pressable>
+        </View>
+
+        <View style={styles.dateField}>
+          <Text style={styles.dateFieldLabel}>Hasta</Text>
+          <Pressable
+            style={({ pressed }) => [
+              styles.dateButton,
+              pressed && styles.dateButtonPressed
+            ]}
+            onPress={() => openPicker('end')}
+          >
+            <Text style={styles.dateButtonText}>{formatDateLabel(endDate)}</Text>
+            <Text style={styles.dateButtonHint}>Toca para cambiar</Text>
+          </Pressable>
+        </View>
       </View>
 
-      <View style={styles.actions}>
+      {canExport ? (
         <Pressable
           style={({ pressed }) => [
-            styles.actionButton,
-            styles.actionButtonFill,
+            styles.shareButton,
             isExporting && styles.actionButtonDisabled,
-            pressed && styles.actionButtonFillPressed
+            pressed && styles.shareButtonPressed
           ]}
           disabled={isExporting}
           onPress={() => handleShare()}
         >
-          <Text style={styles.actionButtonFillText}>
-            {isExporting ? '…' : 'Compartir'}
+          <Text style={styles.shareButtonText}>
+            {isExporting ? '…' : 'Compartir turnos'}
           </Text>
         </Pressable>
-      </View>
+      ) : null}
     </View>
   )
 
@@ -286,7 +324,8 @@ export default function ShiftHistoryScreen() {
   }
 
   if (error) {
-    const message = error instanceof Error ? error.message : 'No se pudo cargar el historial.'
+    const message =
+      error instanceof Error ? error.message : 'No se pudo cargar el historial.'
     return (
       <SafeAreaView style={styles.centered} edges={['bottom']}>
         {filterBar}
@@ -301,8 +340,15 @@ export default function ShiftHistoryScreen() {
     <SafeAreaView style={styles.container} edges={['bottom']}>
       {/* iOS: date picker in a bottom sheet modal */}
       {Platform.OS === 'ios' && activePicker ? (
-        <Modal transparent animationType="slide" onRequestClose={() => setActivePicker(null)}>
-          <Pressable style={styles.modalOverlay} onPress={() => setActivePicker(null)} />
+        <Modal
+          transparent
+          animationType="slide"
+          onRequestClose={() => setActivePicker(null)}
+        >
+          <Pressable
+            style={styles.modalOverlay}
+            onPress={() => setActivePicker(null)}
+          />
           <View style={styles.pickerSheet}>
             <View style={styles.pickerToolbar}>
               <Pressable hitSlop={16} onPress={() => setActivePicker(null)}>
@@ -359,10 +405,17 @@ export default function ShiftHistoryScreen() {
         )}
         renderItem={({ item }) => {
           const member = members?.find((m) => m.user_id === item.worker_id)
-          return <ShiftRow shift={item} workerName={member?.full_name ?? 'Trabajador'} />
+          return (
+            <ShiftRow
+              shift={item}
+              workerName={member?.full_name ?? 'Trabajador'}
+            />
+          )
         }}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
-        SectionSeparatorComponent={() => <View style={styles.sectionSeparator} />}
+        SectionSeparatorComponent={() => (
+          <View style={styles.sectionSeparator} />
+        )}
       />
     </SafeAreaView>
   )
@@ -384,58 +437,67 @@ const styles = StyleSheet.create({
   },
   filterBar: {
     paddingHorizontal: 24,
-    paddingVertical: 18,
-    gap: 14,
+    paddingTop: 20,
+    paddingBottom: 20,
+    gap: 16,
     borderBottomWidth: 1,
     borderBottomColor: '#E5E7EB'
   },
-  dateRange: {
+  filterTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#111111'
+  },
+  dateFields: {
     flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10
+    gap: 12
+  },
+  dateField: {
+    flex: 1,
+    gap: 6
+  },
+  dateFieldLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#555555',
+    paddingLeft: 2
   },
   dateButton: {
-    minHeight: 52,
-    paddingHorizontal: 16,
-    justifyContent: 'center',
+    paddingHorizontal: 14,
+    paddingVertical: 12,
     borderRadius: 12,
     borderWidth: 1.5,
     borderColor: '#D1D5DB',
-    backgroundColor: '#FAFAFA'
+    backgroundColor: '#FAFAFA',
+    gap: 2
   },
   dateButtonPressed: {
-    backgroundColor: '#F3F4F6'
+    backgroundColor: '#F3F4F6',
+    borderColor: '#9CA3AF'
   },
   dateButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: 17,
+    fontWeight: '700',
     color: '#111111'
   },
-  dateRangeDash: {
-    fontSize: 16,
+  dateButtonHint: {
+    fontSize: 12,
     color: '#9CA3AF'
-  },
-  actions: {
-    flexDirection: 'row',
-    gap: 10
-  },
-  actionButton: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: 52,
-    borderRadius: 12
   },
   actionButtonDisabled: {
     opacity: 0.5
   },
-  actionButtonFill: {
+  shareButton: {
+    minHeight: 56,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 14,
     backgroundColor: '#111111'
   },
-  actionButtonFillPressed: {
+  shareButtonPressed: {
     backgroundColor: '#333333'
   },
-  actionButtonFillText: {
+  shareButtonText: {
     fontSize: 17,
     fontWeight: '600',
     color: '#FFFFFF'
