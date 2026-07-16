@@ -1,5 +1,6 @@
 import DateTimePicker from '@react-native-community/datetimepicker'
 import * as FileSystem from 'expo-file-system/legacy'
+import * as Print from 'expo-print'
 import * as Sharing from 'expo-sharing'
 import { useMemo, useState } from 'react'
 import {
@@ -149,60 +150,58 @@ export default function ShiftHistoryScreen() {
     return [header, ...rows].join('\n')
   }
 
-  async function writeCSV() {
-    const dir = FileSystem.documentDirectory
-    if (!dir) throw new Error('No hay acceso al sistema de archivos.')
-    const uri = dir + 'turnos.csv'
-    await FileSystem.writeAsStringAsync(uri, buildCSV(), {
-      encoding: FileSystem.EncodingType.UTF8
-    })
-    return uri
+  function buildPDFHtml() {
+    const periodLabel = `${formatDateLabel(startDate)} — ${formatDateLabel(endDate)}`
+    const rowsHtml = filteredShifts
+      .map((shift) => {
+        const member = members?.find((m) => m.user_id === shift.worker_id)
+        const name = member?.full_name ?? 'Trabajador'
+        const date = new Intl.DateTimeFormat('es-ES').format(new Date(shift.started_at))
+        const start = formatTime(shift.started_at)
+        const end = formatTime(shift.ended_at!)
+        const duration = formatDuration(shift.started_at, shift.ended_at!)
+        return `<tr><td>${name}</td><td>${date}</td><td>${start}</td><td>${end}</td><td>${duration}</td></tr>`
+      })
+      .join('')
+
+    return `<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<style>
+  body { font-family: Arial, sans-serif; padding: 32px; color: #111; }
+  h1 { font-size: 22px; margin-bottom: 4px; }
+  p.period { font-size: 14px; color: #555; margin-bottom: 24px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th { background: #f3f4f6; text-align: left; padding: 10px 12px; border-bottom: 2px solid #e5e7eb; }
+  td { padding: 10px 12px; border-bottom: 1px solid #f3f4f6; }
+  tr:last-child td { border-bottom: none; }
+</style>
+</head>
+<body>
+  <h1>Historial de turnos</h1>
+  <p class="period">${periodLabel}</p>
+  <table>
+    <thead>
+      <tr>
+        <th>Cuidador</th><th>Fecha</th><th>Hora inicio</th><th>Hora fin</th><th>Duración</th>
+      </tr>
+    </thead>
+    <tbody>${rowsHtml}</tbody>
+  </table>
+</body>
+</html>`
   }
 
-  async function handleDownload() {
-    if (filteredShifts.length === 0) {
-      Alert.alert('Sin datos', 'No hay turnos en el rango seleccionado.')
-      return
-    }
+  async function shareAsCSV() {
     setIsExporting(true)
     try {
-      if (Platform.OS === 'android') {
-        const permissions =
-          await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync()
-        if (!permissions.granted) return
-        const csv = buildCSV()
-        const uri = await FileSystem.StorageAccessFramework.createFileAsync(
-          permissions.directoryUri,
-          'turnos.csv',
-          'text/csv'
-        )
-        await FileSystem.writeAsStringAsync(uri, csv, {
-          encoding: FileSystem.EncodingType.UTF8
-        })
-      } else {
-        await writeCSV()
-      }
-      Alert.alert(
-        'Guardado',
-        Platform.OS === 'ios'
-          ? 'Archivo guardado. Encuéntralo en Archivos → care-hours.'
-          : 'Archivo guardado correctamente.'
-      )
-    } catch {
-      Alert.alert('Error', 'No se pudo guardar el archivo.')
-    } finally {
-      setIsExporting(false)
-    }
-  }
-
-  async function handleShare() {
-    if (filteredShifts.length === 0) {
-      Alert.alert('Sin datos', 'No hay turnos en el rango seleccionado.')
-      return
-    }
-    setIsExporting(true)
-    try {
-      const uri = await writeCSV()
+      const dir = FileSystem.documentDirectory
+      if (!dir) throw new Error('No hay acceso al sistema de archivos.')
+      const uri = dir + 'turnos.csv'
+      await FileSystem.writeAsStringAsync(uri, buildCSV(), {
+        encoding: FileSystem.EncodingType.UTF8
+      })
       await Sharing.shareAsync(uri, {
         mimeType: 'text/csv',
         dialogTitle: 'Compartir turnos'
@@ -212,6 +211,33 @@ export default function ShiftHistoryScreen() {
     } finally {
       setIsExporting(false)
     }
+  }
+
+  async function shareAsPDF() {
+    setIsExporting(true)
+    try {
+      const { uri } = await Print.printToFileAsync({ html: buildPDFHtml() })
+      await Sharing.shareAsync(uri, {
+        mimeType: 'application/pdf',
+        dialogTitle: 'Compartir turnos'
+      })
+    } catch {
+      Alert.alert('Error', 'No se pudo generar el PDF.')
+    } finally {
+      setIsExporting(false)
+    }
+  }
+
+  function handleShare() {
+    if (filteredShifts.length === 0) {
+      Alert.alert('Sin datos', 'No hay turnos en el rango seleccionado.')
+      return
+    }
+    Alert.alert('Compartir como', '¿En qué formato quieres exportar los turnos?', [
+      { text: 'Cancelar', style: 'cancel' },
+      { text: 'CSV', onPress: () => { void shareAsCSV() } },
+      { text: 'PDF', onPress: () => { void shareAsPDF() } }
+    ])
   }
 
   const filterBar = (
@@ -236,28 +262,15 @@ export default function ShiftHistoryScreen() {
         <Pressable
           style={({ pressed }) => [
             styles.actionButton,
-            styles.actionButtonOutline,
-            isExporting && styles.actionButtonDisabled,
-            pressed && styles.actionButtonOutlinePressed
-          ]}
-          disabled={isExporting}
-          onPress={() => void handleShare()}
-        >
-          <Text style={styles.actionButtonOutlineText}>Compartir</Text>
-        </Pressable>
-
-        <Pressable
-          style={({ pressed }) => [
-            styles.actionButton,
             styles.actionButtonFill,
             isExporting && styles.actionButtonDisabled,
             pressed && styles.actionButtonFillPressed
           ]}
           disabled={isExporting}
-          onPress={() => void handleDownload()}
+          onPress={() => handleShare()}
         >
           <Text style={styles.actionButtonFillText}>
-            {isExporting ? '…' : 'Guardar'}
+            {isExporting ? '…' : 'Compartir'}
           </Text>
         </Pressable>
       </View>
@@ -415,18 +428,6 @@ const styles = StyleSheet.create({
   },
   actionButtonDisabled: {
     opacity: 0.5
-  },
-  actionButtonOutline: {
-    borderWidth: 1.5,
-    borderColor: '#D1D5DB'
-  },
-  actionButtonOutlinePressed: {
-    backgroundColor: '#F9FAFB'
-  },
-  actionButtonOutlineText: {
-    fontSize: 17,
-    fontWeight: '600',
-    color: '#111111'
   },
   actionButtonFill: {
     backgroundColor: '#111111'
