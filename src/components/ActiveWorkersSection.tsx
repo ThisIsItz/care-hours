@@ -52,7 +52,9 @@ export function ActiveWorkersSection() {
 
   if (error) {
     const message =
-      error instanceof Error ? error.message : 'No se pudo cargar la información.'
+      error instanceof Error
+        ? error.message
+        : 'No se pudo cargar la información.'
     return (
       <View style={styles.errorCard}>
         <Text style={styles.errorText}>{message}</Text>
@@ -84,14 +86,18 @@ export function ActiveWorkersSection() {
             <View style={styles.details}>
               <View style={styles.detailBlock}>
                 <Text style={styles.detailLabel}>Entrada</Text>
-                <Text style={styles.detailValue}>{formatTime(shift.started_at)}</Text>
+                <Text style={styles.detailValue}>
+                  {formatTime(shift.started_at)}
+                </Text>
               </View>
 
               <View style={styles.detailDivider} />
 
               <View style={styles.detailBlock}>
-                <Text style={styles.detailLabel}>Llevas</Text>
-                <Text style={styles.detailValue}>{formatDuration(shift.started_at, now)}</Text>
+                <Text style={styles.detailLabel}>Total</Text>
+                <Text style={styles.detailValue}>
+                  {formatDuration(shift.started_at, now)}
+                </Text>
               </View>
             </View>
           </View>
