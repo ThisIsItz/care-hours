@@ -41,7 +41,9 @@ function Duration({ startedAt, now }: DurationProps) {
   return (
     <View style={styles.durationStack}>
       <Text style={styles.timeValue}>{hours} h</Text>
-      <Text style={styles.timeValueSub}>{minutes.toString().padStart(2, '0')} min</Text>
+      <Text style={styles.timeValueSub}>
+        {minutes.toString().padStart(2, '0')} min
+      </Text>
     </View>
   )
 }
@@ -70,17 +72,22 @@ export function WorkerShiftCard() {
     try {
       await startShiftMutation.mutateAsync()
     } catch (mutationError) {
-      Alert.alert('No se pudo iniciar el turno', getErrorMessage(mutationError))
+      Alert.alert(
+        'No se pudo fichar la entrada',
+        getErrorMessage(mutationError)
+      )
     }
   }
 
   function confirmEndShift() {
-    Alert.alert('Terminar turno', '¿Quieres registrar la salida ahora?', [
+    Alert.alert('Fichar salida', '¿Quieres fichar la salida ahora?', [
       { text: 'Cancelar', style: 'cancel' },
       {
-        text: 'Terminar turno',
+        text: 'Fichar salida',
         style: 'destructive',
-        onPress: () => { void handleEndShift() }
+        onPress: () => {
+          void handleEndShift()
+        }
       }
     ])
   }
@@ -89,7 +96,7 @@ export function WorkerShiftCard() {
     try {
       await endShiftMutation.mutateAsync()
     } catch (mutationError) {
-      Alert.alert('No se pudo terminar el turno', getErrorMessage(mutationError))
+      Alert.alert('No se pudo fichar la salida', getErrorMessage(mutationError))
     }
   }
 
@@ -115,16 +122,16 @@ export function WorkerShiftCard() {
       <View style={styles.inactiveCard}>
         <View style={styles.statusRow}>
           <View accessible={false} style={styles.inactiveDot} />
-          <Text style={styles.statusText}>No estás trabajando</Text>
+          <Text style={styles.statusText}>Sin turno activo</Text>
         </View>
 
         <Text style={styles.description}>
-          Pulsa el botón cuando empieces tu jornada.
+          Pulsa el botón para fichar tu entrada.
         </Text>
 
         <Pressable
           accessibilityRole="button"
-          accessibilityHint="Inicia tu turno de trabajo"
+          accessibilityHint="Ficha la entrada de tu turno"
           android_ripple={{ color: '#ffffff22' }}
           disabled={startShiftMutation.isPending}
           style={({ pressed }) => [
@@ -137,7 +144,7 @@ export function WorkerShiftCard() {
           {startShiftMutation.isPending ? (
             <ActivityIndicator color="#FFFFFF" />
           ) : (
-            <Text style={styles.startButtonText}>Empezar turno</Text>
+            <Text style={styles.startButtonText}>Fichar entrada</Text>
           )}
         </Pressable>
       </View>
@@ -149,13 +156,15 @@ export function WorkerShiftCard() {
       <View style={styles.activeCard}>
         <View style={styles.activeHeader}>
           <View accessible={false} style={styles.activeDot} />
-          <Text style={styles.activeStatusText}>Estás trabajando</Text>
+          <Text style={styles.activeStatusText}>Turno activo</Text>
         </View>
 
         <View style={styles.timeGrid}>
           <View style={styles.timeBlock}>
             <Text style={styles.timeLabel}>Entrada</Text>
-            <Text style={styles.timeValue}>{formatTime(currentShift.started_at)}</Text>
+            <Text style={styles.timeValue}>
+              {formatTime(currentShift.started_at)}
+            </Text>
           </View>
 
           <View accessible={false} style={styles.timeDivider} />
@@ -169,7 +178,7 @@ export function WorkerShiftCard() {
 
       <Pressable
         accessibilityRole="button"
-        accessibilityHint="Registra la salida del turno"
+        accessibilityHint="Ficha la salida de tu turno"
         android_ripple={{ color: '#11111122' }}
         disabled={endShiftMutation.isPending}
         style={({ pressed }) => [
@@ -182,7 +191,7 @@ export function WorkerShiftCard() {
         {endShiftMutation.isPending ? (
           <ActivityIndicator />
         ) : (
-          <Text style={styles.endButtonText}>Terminar turno</Text>
+          <Text style={styles.endButtonText}>Fichar salida</Text>
         )}
       </Pressable>
     </>

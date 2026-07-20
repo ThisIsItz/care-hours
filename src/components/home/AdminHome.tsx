@@ -133,7 +133,7 @@ export function AdminHome({
 
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Trabajando ahora</Text>
+            <Text style={styles.sectionTitle}>Turnos activos</Text>
             <Pressable
               accessibilityRole="button"
               accessibilityLabel="Ver historial de turnos"

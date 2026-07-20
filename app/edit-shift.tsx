@@ -116,7 +116,7 @@ export default function EditShiftScreen() {
 
   function handleNext() {
     if (newEnd <= newStart) {
-      setValidationError('La hora de fin debe ser posterior a la de inicio.')
+      setValidationError('La hora de salida debe ser posterior a la de entrada.')
       return
     }
     setValidationError(null)
@@ -199,10 +199,10 @@ export default function EditShiftScreen() {
           <Text style={styles.workerLabel}>{workerName}</Text>
 
           <View style={styles.fieldGroup}>
-            <Text style={styles.fieldLabel}>Inicio</Text>
+            <Text style={styles.fieldLabel}>Entrada</Text>
             <Pressable
               accessibilityRole="button"
-              accessibilityLabel={`Hora de inicio: ${formatDateTime(newStart)}. Toca para cambiar`}
+              accessibilityLabel={`Hora de entrada: ${formatDateTime(newStart)}. Toca para cambiar`}
               style={({ pressed }) => [
                 styles.dateButton,
                 pressed && styles.dateButtonPressed
@@ -217,10 +217,10 @@ export default function EditShiftScreen() {
           </View>
 
           <View style={styles.fieldGroup}>
-            <Text style={styles.fieldLabel}>Fin</Text>
+            <Text style={styles.fieldLabel}>Salida</Text>
             <Pressable
               accessibilityRole="button"
-              accessibilityLabel={`Hora de fin: ${formatDateTime(newEnd)}. Toca para cambiar`}
+              accessibilityLabel={`Hora de salida: ${formatDateTime(newEnd)}. Toca para cambiar`}
               style={({ pressed }) => [
                 styles.dateButton,
                 pressed && styles.dateButtonPressed

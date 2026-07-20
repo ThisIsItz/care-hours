@@ -54,7 +54,7 @@ function formatDateLabel(date: Date) {
 
 function getEditNoticeTitle(shift: Shift) {
   if (shift.admin_action === 'created') return 'Turno añadido'
-  if (shift.admin_action === 'stopped') return 'Turno terminado'
+  if (shift.admin_action === 'stopped') return 'Turno finalizado'
   return 'Turno modificado'
 }
 

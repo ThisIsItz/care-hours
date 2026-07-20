@@ -59,19 +59,19 @@ export function ActiveWorkersSection({
 
   function handleStopShift(shiftId: string, workerName: string) {
     Alert.alert(
-      'Terminar turno',
-      `¿Seguro que quieres terminar el turno de ${workerName}? Se registrará como finalizado ahora mismo. Esta acción no se puede deshacer.`,
+      'Finalizar turno',
+      `¿Seguro que quieres finalizar el turno de ${workerName}? Se registrará como finalizado ahora mismo. Esta acción no se puede deshacer.`,
       [
         { text: 'Cancelar', style: 'cancel' },
         {
-          text: 'Terminar turno',
+          text: 'Finalizar turno',
           style: 'destructive',
           onPress: () => {
             stopShiftMutation.mutate(
               { shiftId, reason: null },
               {
                 onError: () => {
-                  Alert.alert('Error', 'No se pudo terminar el turno.')
+                  Alert.alert('Error', 'No se pudo finalizar el turno.')
                 }
               }
             )
@@ -104,7 +104,7 @@ export function ActiveWorkersSection({
   if (!shifts?.length) {
     return (
       <View style={styles.emptyCard}>
-        <Text style={styles.emptyText}>Nadie está trabajando ahora mismo.</Text>
+        <Text style={styles.emptyText}>Nadie tiene un turno activo en este momento.</Text>
       </View>
     )
   }
@@ -143,7 +143,7 @@ export function ActiveWorkersSection({
             {isAdmin ? (
               <Pressable
                 accessibilityRole="button"
-                accessibilityLabel={`Terminar turno de ${workerName}`}
+                accessibilityLabel={`Finalizar turno de ${workerName}`}
                 accessibilityState={{ disabled: stopShiftMutation.isPending }}
                 disabled={stopShiftMutation.isPending}
                 style={({ pressed }) => [
@@ -153,7 +153,7 @@ export function ActiveWorkersSection({
                 ]}
                 onPress={() => handleStopShift(shift.id, workerName)}
               >
-                <Text style={styles.stopButtonText}>Terminar turno</Text>
+                <Text style={styles.stopButtonText}>Finalizar turno</Text>
               </Pressable>
             ) : null}
           </View>
