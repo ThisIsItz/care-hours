@@ -359,7 +359,23 @@ export default function ShiftHistoryScreen() {
 
   const filterBar = (
     <View style={styles.filterBar}>
-      <Text style={styles.filterTitle}>Período</Text>
+      <View style={styles.filterHeader}>
+        <Text style={styles.filterTitle}>Período</Text>
+
+        {isAdmin ? (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Añadir turno"
+            style={({ pressed }) => [
+              styles.addButton,
+              pressed && styles.addButtonPressed
+            ]}
+            onPress={() => router.push('/add-shift')}
+          >
+            <Text style={styles.addButtonText}>+ Añadir turno</Text>
+          </Pressable>
+        ) : null}
+      </View>
 
       <View style={styles.dateFields}>
         <View style={styles.dateField}>
@@ -585,6 +601,11 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#E5E7EB'
   },
+  filterHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between'
+  },
   filterTitle: {
     fontSize: 18,
     fontWeight: '700',
@@ -628,6 +649,21 @@ const styles = StyleSheet.create({
   },
   actionButtonDisabled: {
     opacity: 0.5
+  },
+  addButton: {
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 10,
+    borderWidth: 1.5,
+    borderColor: '#D1D5DB'
+  },
+  addButtonPressed: {
+    backgroundColor: '#F3F4F6'
+  },
+  addButtonText: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#111111'
   },
   shareButton: {
     minHeight: 56,

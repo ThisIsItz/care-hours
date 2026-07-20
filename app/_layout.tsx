@@ -61,6 +61,13 @@ function RootNavigator() {
             title: 'Editar turno'
           }}
         />
+        <Stack.Screen
+          name="add-shift"
+          options={{
+            headerShown: true,
+            title: 'Añadir turno'
+          }}
+        />
       </Stack.Protected>
     </Stack>
   )
