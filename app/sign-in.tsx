@@ -12,6 +12,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 import { FormInput } from '../src/components/FormInput'
+import { LegalLinksRow } from '../src/components/LegalLinksRow'
 import { supabase } from '../src/lib/supabase'
 
 export default function SignInScreen() {
@@ -102,6 +103,8 @@ export default function SignInScreen() {
             >
               <Text style={styles.linkText}>¿No tienes cuenta? Regístrate</Text>
             </Pressable>
+
+            <LegalLinksRow />
           </View>
         </View>
       </KeyboardAvoidingView>

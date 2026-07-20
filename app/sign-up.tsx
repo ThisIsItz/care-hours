@@ -13,15 +13,25 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 import { FormInput } from '../src/components/FormInput'
+import { LegalCheckbox } from '../src/components/LegalCheckbox'
+import { PRIVACY_POLICY_URL, TERMS_AND_CONDITIONS_URL } from '../src/lib/legal'
 import { supabase } from '../src/lib/supabase'
 
 export default function SignUpScreen() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [hasReadPrivacyPolicy, setHasReadPrivacyPolicy] = useState(false)
+  const [hasAcceptedTerms, setHasAcceptedTerms] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [formError, setFormError] = useState<string | null>(null)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
+
+  const isFormValid = Boolean(
+    name.trim() && email.trim() && password.length >= 8
+  )
+  const canSubmit =
+    isFormValid && hasReadPrivacyPolicy && hasAcceptedTerms && !isSubmitting
 
   async function handleSignUp() {
     const normalizedName = name.trim()
@@ -34,6 +44,14 @@ export default function SignUpScreen() {
 
     if (password.length < 8) {
       Alert.alert('Contraseña demasiado corta', 'Utiliza al menos 8 caracteres.')
+      return
+    }
+
+    if (!hasReadPrivacyPolicy || !hasAcceptedTerms) {
+      Alert.alert(
+        'Falta tu confirmación',
+        'Debes leer la Política de Privacidad y aceptar los Términos y Condiciones.'
+      )
       return
     }
 
@@ -115,6 +133,25 @@ export default function SignUpScreen() {
             </View>
           </View>
 
+          <View style={styles.legalGroup}>
+            <LegalCheckbox
+              checked={hasReadPrivacyPolicy}
+              onToggle={() => setHasReadPrivacyPolicy((v) => !v)}
+              accessibilityLabel="He leído la Política de Privacidad"
+              label="He leído la"
+              linkText="Política de Privacidad"
+              url={PRIVACY_POLICY_URL}
+            />
+            <LegalCheckbox
+              checked={hasAcceptedTerms}
+              onToggle={() => setHasAcceptedTerms((v) => !v)}
+              accessibilityLabel="He leído y acepto los Términos y Condiciones"
+              label="He leído y acepto los"
+              linkText="Términos y Condiciones"
+              url={TERMS_AND_CONDITIONS_URL}
+            />
+          </View>
+
           <View style={styles.actions}>
             {formError ? (
               <View accessibilityLiveRegion="assertive" style={styles.errorBox}>
@@ -130,11 +167,12 @@ export default function SignUpScreen() {
 
             <Pressable
               accessibilityRole="button"
-              disabled={isSubmitting}
+              accessibilityState={{ disabled: !canSubmit }}
+              disabled={!canSubmit}
               style={({ pressed }) => [
                 styles.primaryButton,
-                isSubmitting && styles.disabledButton,
-                pressed && styles.primaryButtonPressed
+                !canSubmit && styles.disabledButton,
+                pressed && canSubmit && styles.primaryButtonPressed
               ]}
               onPress={() => void handleSignUp()}
             >
@@ -170,6 +208,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 28,
     gap: 32
+  },
+  legalGroup: {
+    gap: 2
   },
   title: {
     fontSize: 34,
