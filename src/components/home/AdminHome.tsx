@@ -1,6 +1,7 @@
 import { router } from 'expo-router'
 import {
   ActivityIndicator,
+  Alert,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -11,6 +12,8 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 
 import { ActiveWorkersSection } from '@/src/components/ActiveWorkersSection'
 import { FamilyMemberCard } from '@/src/components/FamilyMemberCard'
+import { useRemoveFamilyMember } from '@/src/hooks/useRemoveFamilyMember'
+import { useUpdateMemberRole } from '@/src/hooks/useUpdateMemberRole'
 import type { CurrentFamily, FamilyMember } from '@/src/types/family'
 
 type AdminHomeProps = {
@@ -30,10 +33,69 @@ export function AdminHome({
   onInvitePress,
   onSignOut
 }: AdminHomeProps) {
+  const removeMemberMutation = useRemoveFamilyMember()
+  const updateRoleMutation = useUpdateMemberRole()
+
   const errorMessage =
     membersError instanceof Error
       ? membersError.message
       : 'No se pudieron cargar los miembros.'
+
+  function handleRemoveMember(member: FamilyMember) {
+    Alert.alert(
+      'Eliminar persona',
+      `¿Seguro que quieres eliminar a ${member.full_name} de la familia? Esta acción no se puede deshacer.`,
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Eliminar',
+          style: 'destructive',
+          onPress: () => {
+            removeMemberMutation.mutate(
+              { userId: member.user_id },
+              {
+                onError: (error) => {
+                  const message =
+                    error instanceof Error
+                      ? error.message
+                      : 'No se pudo eliminar a esta persona.'
+                  Alert.alert('Error', message)
+                }
+              }
+            )
+          }
+        }
+      ]
+    )
+  }
+
+  function handleChangeRole(member: FamilyMember, newRole: 'admin' | 'family') {
+    const roleLabel = newRole === 'admin' ? 'administrador' : 'familiar'
+    Alert.alert(
+      'Cambiar rol',
+      `¿Seguro que quieres hacer ${roleLabel} a ${member.full_name}?`,
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Confirmar',
+          onPress: () => {
+            updateRoleMutation.mutate(
+              { userId: member.user_id, role: newRole },
+              {
+                onError: (error) => {
+                  const message =
+                    error instanceof Error
+                      ? error.message
+                      : 'No se pudo cambiar el rol de esta persona.'
+                  Alert.alert('Error', message)
+                }
+              }
+            )
+          }
+        }
+      ]
+    )
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -97,7 +159,13 @@ export function AdminHome({
 
           {!areMembersLoading && !membersError
             ? members.map((member) => (
-                <FamilyMemberCard key={member.id} member={member} />
+                <FamilyMemberCard
+                  key={member.id}
+                  member={member}
+                  isAdmin
+                  onChangeRole={handleChangeRole}
+                  onRemove={handleRemoveMember}
+                />
               ))
             : null}
         </View>

@@ -5,7 +5,8 @@ import type {
   FamilyInvite,
   FamilyMember,
   FamilyMembership,
-  InviteRole
+  InviteRole,
+  MemberRole
 } from '@/src/types/family'
 
 export async function getCurrentFamily(
@@ -89,4 +90,30 @@ export async function getFamilyMembers(): Promise<FamilyMember[]> {
   }
 
   return (data ?? []) as FamilyMember[]
+}
+
+export async function removeFamilyMember(userId: string): Promise<void> {
+  const { error } = await supabase.rpc('admin_remove_family_member', {
+    p_member_user_id: userId
+  })
+
+  if (error) {
+    throw error
+  }
+}
+
+export async function updateMemberRole(
+  userId: string,
+  role: Extract<MemberRole, 'admin' | 'family'>
+): Promise<FamilyMembership> {
+  const { data, error } = await supabase.rpc('admin_update_member_role', {
+    p_member_user_id: userId,
+    p_new_role: role
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return data as FamilyMembership
 }
