@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native'
+import { Alert, Pressable, StyleSheet, Text, View } from 'react-native'
 
 import { useAuth } from '@/src/contexts/AuthContext'
 import type { FamilyMember, MemberRole } from '@/src/types/family'
@@ -26,70 +26,68 @@ export function FamilyMemberCard({
   const isCurrentUser = session?.user.id === member.user_id
   const canManage = isAdmin && !isCurrentUser
 
+  function openActionMenu() {
+    const options: {
+      text: string
+      style?: 'destructive' | 'cancel'
+      onPress?: () => void
+    }[] = []
+
+    if (member.role === 'family') {
+      options.push({
+        text: 'Hacer administrador',
+        onPress: () => onChangeRole?.(member, 'admin')
+      })
+    } else if (member.role === 'admin') {
+      options.push({
+        text: 'Hacer familiar',
+        onPress: () => onChangeRole?.(member, 'family')
+      })
+    }
+
+    options.push({
+      text: 'Eliminar',
+      style: 'destructive',
+      onPress: () => onRemove?.(member)
+    })
+    options.push({ text: 'Cancelar', style: 'cancel' })
+
+    Alert.alert(member.full_name, 'Elige una acción', options)
+  }
+
   return (
     <View style={styles.card}>
-      <View style={styles.mainRow}>
-        <View style={styles.avatar}>
-          <Text style={styles.avatarText}>
-            {member.full_name.trim().charAt(0).toUpperCase()}
-          </Text>
-        </View>
+      <View style={styles.avatar}>
+        <Text style={styles.avatarText}>
+          {member.full_name.trim().charAt(0).toUpperCase()}
+        </Text>
+      </View>
 
-        <View style={styles.content}>
-          <View style={styles.nameRow}>
-            <Text style={styles.name}>{member.full_name}</Text>
-            {isCurrentUser ? (
-              <View accessible={false} style={styles.youBadge}>
-                <Text style={styles.youBadgeText}>Tú</Text>
-              </View>
-            ) : null}
-          </View>
-          <Text style={styles.role}>{roleLabels[member.role]}</Text>
+      <View style={styles.content}>
+        <View style={styles.nameRow}>
+          <Text style={styles.name}>{member.full_name}</Text>
+          {isCurrentUser ? (
+            <View accessible={false} style={styles.youBadge}>
+              <Text style={styles.youBadgeText}>Tú</Text>
+            </View>
+          ) : null}
         </View>
+        <Text style={styles.role}>{roleLabels[member.role]}</Text>
       </View>
 
       {canManage ? (
-        <View style={styles.actions}>
-          {member.role === 'family' ? (
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel={`Hacer administrador a ${member.full_name}`}
-              style={({ pressed }) => [
-                styles.actionButton,
-                pressed && styles.actionButtonPressed
-              ]}
-              onPress={() => onChangeRole?.(member, 'admin')}
-            >
-              <Text style={styles.actionButtonText}>Hacer admin</Text>
-            </Pressable>
-          ) : null}
-
-          {member.role === 'admin' ? (
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel={`Hacer familiar a ${member.full_name}`}
-              style={({ pressed }) => [
-                styles.actionButton,
-                pressed && styles.actionButtonPressed
-              ]}
-              onPress={() => onChangeRole?.(member, 'family')}
-            >
-              <Text style={styles.actionButtonText}>Hacer familiar</Text>
-            </Pressable>
-          ) : null}
-
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={`Eliminar a ${member.full_name}`}
-            style={({ pressed }) => [
-              styles.removeButton,
-              pressed && styles.removeButtonPressed
-            ]}
-            onPress={() => onRemove?.(member)}
-          >
-            <Text style={styles.removeButtonText}>Eliminar</Text>
-          </Pressable>
-        </View>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={`Más opciones para ${member.full_name}`}
+          hitSlop={10}
+          style={({ pressed }) => [
+            styles.menuButton,
+            pressed && styles.menuButtonPressed
+          ]}
+          onPress={openActionMenu}
+        >
+          <Text style={styles.menuButtonText}>•••</Text>
+        </Pressable>
       ) : null}
     </View>
   )
@@ -97,16 +95,13 @@ export function FamilyMemberCard({
 
 const styles = StyleSheet.create({
   card: {
-    gap: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
     padding: 18,
     borderWidth: 1.5,
     borderColor: '#E5E7EB',
     borderRadius: 16
-  },
-  mainRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 16
   },
   avatar: {
     width: 52,
@@ -152,46 +147,20 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#555555'
   },
-  actions: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-    paddingTop: 14,
-    borderTopWidth: 1,
-    borderTopColor: '#F3F4F6'
-  },
-  actionButton: {
+  menuButton: {
+    width: 36,
     height: 36,
-    paddingHorizontal: 12,
-    borderRadius: 8,
-    borderWidth: 1.5,
-    borderColor: '#D1D5DB',
+    borderRadius: 18,
     alignItems: 'center',
     justifyContent: 'center'
   },
-  actionButtonPressed: {
+  menuButtonPressed: {
     backgroundColor: '#F3F4F6'
   },
-  actionButtonText: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: '#374151'
-  },
-  removeButton: {
-    height: 36,
-    paddingHorizontal: 12,
-    borderRadius: 8,
-    borderWidth: 1.5,
-    borderColor: '#FCA5A5',
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  removeButtonPressed: {
-    backgroundColor: '#FEF2F2'
-  },
-  removeButtonText: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: '#B91C1C'
+  menuButtonText: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#6B7280',
+    letterSpacing: 1
   }
 })

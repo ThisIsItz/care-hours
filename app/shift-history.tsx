@@ -537,7 +537,9 @@ export default function ShiftHistoryScreen() {
           <Text style={styles.emptyText}>No hay turnos en este período.</Text>
         }
         renderSectionHeader={({ section }) => (
-          <Text style={styles.sectionHeader}>{section.title}</Text>
+          <View style={styles.sectionHeaderContainer}>
+            <Text style={styles.sectionHeader}>{section.title}</Text>
+          </View>
         )}
         renderItem={({ item }) => {
           const member = members?.find((m) => m.user_id === item.worker_id)
@@ -685,13 +687,19 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#FFFFFF'
   },
+  sectionHeaderContainer: {
+    marginTop: 24,
+    marginHorizontal: 24,
+    marginBottom: 4,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    borderRadius: 10,
+    backgroundColor: '#F3F4F6'
+  },
   sectionHeader: {
-    paddingTop: 28,
-    paddingBottom: 8,
-    paddingHorizontal: 24,
-    fontSize: 15,
-    fontWeight: '600',
-    color: '#555555',
+    fontSize: 16,
+    fontWeight: '800',
+    color: '#111111',
     textTransform: 'capitalize'
   },
   row: {
@@ -730,6 +738,7 @@ const styles = StyleSheet.create({
   },
   rowActions: {
     flexDirection: 'row',
+    justifyContent: 'flex-end',
     gap: 8,
     paddingTop: 4
   },

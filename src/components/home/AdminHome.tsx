@@ -69,6 +69,13 @@ export function AdminHome({
     )
   }
 
+  function confirmSignOut() {
+    Alert.alert('Cerrar sesión', '¿Seguro que quieres salir?', [
+      { text: 'Cancelar', style: 'cancel' },
+      { text: 'Cerrar sesión', style: 'destructive', onPress: onSignOut }
+    ])
+  }
+
   function handleChangeRole(member: FamilyMember, newRole: 'admin' | 'family') {
     const roleLabel = newRole === 'admin' ? 'administrador' : 'familiar'
     Alert.alert(
@@ -169,7 +176,9 @@ export function AdminHome({
               ))
             : null}
         </View>
+      </ScrollView>
 
+      <View style={styles.footer}>
         <Pressable
           accessibilityRole="button"
           accessibilityLabel="Cerrar sesión"
@@ -177,11 +186,11 @@ export function AdminHome({
             styles.signOutButton,
             pressed && styles.signOutButtonPressed
           ]}
-          onPress={onSignOut}
+          onPress={confirmSignOut}
         >
           <Text style={styles.signOutButtonText}>Cerrar sesión</Text>
         </Pressable>
-      </ScrollView>
+      </View>
     </SafeAreaView>
   )
 }
@@ -273,6 +282,12 @@ const styles = StyleSheet.create({
   errorText: {
     fontSize: 16,
     color: '#B91C1C'
+  },
+  footer: {
+    padding: 24,
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#E5E7EB'
   },
   signOutButton: {
     minHeight: 60,
