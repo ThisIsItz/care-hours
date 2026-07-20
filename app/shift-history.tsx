@@ -98,7 +98,9 @@ function ShiftRow({
 
       {showEditNotice ? (
         <View style={styles.editDetailsCard}>
-          <Text style={styles.editDetailsTitle}>{getEditNoticeTitle(shift)}</Text>
+          <Text style={styles.editDetailsTitle}>
+            {getEditNoticeTitle(shift)}
+          </Text>
           {showEditDetails ? (
             <>
               <Text style={styles.editDetailsText}>
@@ -312,7 +314,7 @@ export default function ShiftHistoryScreen() {
       })
       await Sharing.shareAsync(uri, {
         mimeType: 'text/csv',
-        dialogTitle: 'Compartir turnos'
+        dialogTitle: 'Exportar turnos'
       })
     } catch {
       Alert.alert('Error', 'No se pudo compartir el archivo.')
@@ -327,7 +329,7 @@ export default function ShiftHistoryScreen() {
       const { uri } = await Print.printToFileAsync({ html: buildPDFHtml() })
       await Sharing.shareAsync(uri, {
         mimeType: 'application/pdf',
-        dialogTitle: 'Compartir turnos'
+        dialogTitle: 'Exportar turnos'
       })
     } catch {
       Alert.alert('Error', 'No se pudo generar el PDF.')
@@ -423,7 +425,7 @@ export default function ShiftHistoryScreen() {
       {canExport ? (
         <Pressable
           accessibilityRole="button"
-          accessibilityLabel="Compartir turnos"
+          accessibilityLabel="Exportar turnos"
           accessibilityState={{ disabled: isExporting }}
           style={({ pressed }) => [
             styles.shareButton,
@@ -434,7 +436,7 @@ export default function ShiftHistoryScreen() {
           onPress={() => handleShare()}
         >
           <Text style={styles.shareButtonText}>
-            {isExporting ? '…' : 'Compartir turnos'}
+            {isExporting ? '…' : 'Exportar turnos'}
           </Text>
         </Pressable>
       ) : null}

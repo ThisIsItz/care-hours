@@ -64,14 +64,14 @@ export function FamilyMemberCard({
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={`Más opciones para ${member.full_name}`}
-          hitSlop={10}
+          hitSlop={8}
           style={({ pressed }) => [
             styles.menuButton,
             pressed && styles.menuButtonPressed
           ]}
           onPress={() => setIsMenuVisible(true)}
         >
-          <Text style={styles.menuButtonText}>•••</Text>
+          <Text style={styles.menuButtonText}>Opciones</Text>
         </Pressable>
       ) : null}
 
@@ -226,9 +226,11 @@ const styles = StyleSheet.create({
     color: '#555555'
   },
   menuButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    height: 40,
+    paddingHorizontal: 14,
+    borderRadius: 10,
+    borderWidth: 1.5,
+    borderColor: '#D1D5DB',
     alignItems: 'center',
     justifyContent: 'center'
   },
@@ -236,10 +238,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#F3F4F6'
   },
   menuButtonText: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#6B7280',
-    letterSpacing: 1
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#111111'
   },
   // Action sheet
   sheetOverlay: {
