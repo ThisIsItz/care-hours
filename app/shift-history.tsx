@@ -77,66 +77,67 @@ function ShiftRow({
 }: ShiftRowProps) {
   return (
     <View style={styles.row}>
-      <View style={styles.rowLeft}>
+      <View style={styles.rowHeader}>
         <Text style={styles.workerName}>{workerName}</Text>
-        <View style={styles.times}>
-          <Text style={styles.time}>{formatTime(shift.started_at)}</Text>
-          <Text style={styles.timeSeparator}>→</Text>
-          <Text style={styles.time}>{formatTime(shift.ended_at!)}</Text>
-        </View>
-        {showEditNotice ? (
-          <View style={styles.editDetailsCard}>
-            {showEditDetails ? (
-              <>
-                <Text style={styles.editDetailsTitle}>Turno modificado</Text>
-                <Text style={styles.editDetailsText}>
-                  {shift.edit_reason || 'Sin motivo indicado'}
-                </Text>
-                <Text style={styles.editDetailsMeta}>
-                  Editado por: {editorName}
-                </Text>
-              </>
-            ) : (
-              <Text style={styles.editDetailsTitle}>Turno corregido</Text>
-            )}
-          </View>
-        ) : null}
-      </View>
-      <View style={styles.rowRight}>
         <Text style={styles.duration}>
           {formatDuration(shift.started_at, shift.ended_at!)}
         </Text>
-        {isAdmin || canDelete ? (
-          <View style={styles.rowActions}>
-            {isAdmin ? (
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel={`Editar turno de ${workerName}`}
-                style={({ pressed }) => [
-                  styles.editButton,
-                  pressed && styles.editButtonPressed
-                ]}
-                onPress={onEdit}
-              >
-                <Text style={styles.editButtonText}>Editar</Text>
-              </Pressable>
-            ) : null}
-            {canDelete ? (
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel={`Eliminar turno de ${workerName}`}
-                style={({ pressed }) => [
-                  styles.deleteButton,
-                  pressed && styles.deleteButtonPressed
-                ]}
-                onPress={onDelete}
-              >
-                <Text style={styles.deleteButtonText}>Eliminar</Text>
-              </Pressable>
-            ) : null}
-          </View>
-        ) : null}
       </View>
+
+      <View style={styles.times}>
+        <Text style={styles.time}>{formatTime(shift.started_at)}</Text>
+        <Text style={styles.timeSeparator}>→</Text>
+        <Text style={styles.time}>{formatTime(shift.ended_at!)}</Text>
+      </View>
+
+      {showEditNotice ? (
+        <View style={styles.editDetailsCard}>
+          {showEditDetails ? (
+            <>
+              <Text style={styles.editDetailsTitle}>Turno modificado</Text>
+              <Text style={styles.editDetailsText}>
+                {shift.edit_reason || 'Sin motivo indicado'}
+              </Text>
+              <Text style={styles.editDetailsMeta}>
+                Editado por: {editorName}
+              </Text>
+            </>
+          ) : (
+            <Text style={styles.editDetailsTitle}>Turno corregido</Text>
+          )}
+        </View>
+      ) : null}
+
+      {isAdmin || canDelete ? (
+        <View style={styles.rowActions}>
+          {isAdmin ? (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={`Editar turno de ${workerName}`}
+              style={({ pressed }) => [
+                styles.editButton,
+                pressed && styles.editButtonPressed
+              ]}
+              onPress={onEdit}
+            >
+              <Text style={styles.editButtonText}>Editar</Text>
+            </Pressable>
+          ) : null}
+          {canDelete ? (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={`Eliminar turno de ${workerName}`}
+              style={({ pressed }) => [
+                styles.deleteButton,
+                pressed && styles.deleteButtonPressed
+              ]}
+              onPress={onDelete}
+            >
+              <Text style={styles.deleteButtonText}>Eliminar</Text>
+            </Pressable>
+          ) : null}
+        </View>
+      ) : null}
     </View>
   )
 }
@@ -690,20 +691,15 @@ const styles = StyleSheet.create({
     textTransform: 'capitalize'
   },
   row: {
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    gap: 8
+  },
+  rowHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 16,
-    paddingHorizontal: 24,
     gap: 16
-  },
-  rowLeft: {
-    gap: 4,
-    flex: 1
-  },
-  rowRight: {
-    alignItems: 'flex-end',
-    gap: 6
   },
   workerName: {
     fontSize: 18,
@@ -730,7 +726,8 @@ const styles = StyleSheet.create({
   },
   rowActions: {
     flexDirection: 'row',
-    gap: 8
+    gap: 8,
+    paddingTop: 4
   },
   editButton: {
     height: 36,
