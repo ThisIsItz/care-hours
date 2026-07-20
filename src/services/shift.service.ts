@@ -8,7 +8,7 @@ async function getCurrentUserId() {
   } = await supabase.auth.getUser()
 
   if (error) {
-    throw error
+    throw new Error(error.message)
   }
 
   if (!user?.id) {
@@ -30,7 +30,7 @@ async function getCurrentShiftFromTable(userId: string): Promise<Shift | null> {
 
   if (error) {
     console.error('getCurrentShiftFromTable error:', error)
-    throw error
+    throw new Error(error.message)
   }
 
   return (data as Shift | null) ?? null
@@ -40,7 +40,7 @@ async function getCurrentShiftFromRpc(): Promise<Shift | null> {
   const { data, error } = await supabase.rpc('get_current_shift')
 
   if (error) {
-    throw error
+    throw new Error(error.message)
   }
 
   return (data as Shift | null) ?? null
@@ -50,7 +50,7 @@ async function startShiftFromRpc(): Promise<Shift> {
   const { data, error } = await supabase.rpc('start_shift')
 
   if (error) {
-    throw error
+    throw new Error(error.message)
   }
 
   return data as Shift
@@ -60,7 +60,7 @@ async function endShiftFromRpc(): Promise<Shift | null> {
   const { data, error } = await supabase.rpc('end_shift')
 
   if (error) {
-    throw error
+    throw new Error(error.message)
   }
 
   return (data as Shift | null) ?? null
@@ -101,7 +101,7 @@ export async function startShift(): Promise<Shift | null> {
 
     if (error) {
       console.error('startShift table insert error:', error)
-      throw error
+      throw new Error(error.message)
     }
 
     return data as Shift
@@ -113,13 +113,13 @@ export async function startShift(): Promise<Shift | null> {
 
 export async function getShiftHistory(): Promise<Shift[]> {
   const { data, error } = await supabase.rpc('get_family_shift_history')
-  if (error) throw error
+  if (error) throw new Error(error.message)
   return (data ?? []) as Shift[]
 }
 
 export async function getActiveShifts(): Promise<Shift[]> {
   const { data, error } = await supabase.rpc('get_active_family_shifts')
-  if (error) throw error
+  if (error) throw new Error(error.message)
   return (data ?? []) as Shift[]
 }
 
@@ -135,7 +135,7 @@ export async function adminEditShift(
     p_ended_at:   endedAt,
     p_reason:     reason ?? null
   })
-  if (error) throw error
+  if (error) throw new Error(error.message)
   return data as Shift
 }
 
@@ -143,7 +143,7 @@ export async function adminDeleteShift(shiftId: string): Promise<void> {
   const { error } = await supabase.rpc('admin_delete_shift', {
     p_shift_id: shiftId
   })
-  if (error) throw error
+  if (error) throw new Error(error.message)
 }
 
 export async function adminCreateShift(
@@ -158,7 +158,7 @@ export async function adminCreateShift(
     p_ended_at: endedAt,
     p_reason: reason ?? null
   })
-  if (error) throw error
+  if (error) throw new Error(error.message)
   return data as Shift
 }
 
@@ -170,7 +170,7 @@ export async function adminStopShift(
     p_shift_id: shiftId,
     p_reason: reason ?? null
   })
-  if (error) throw error
+  if (error) throw new Error(error.message)
   return data as Shift
 }
 
@@ -200,7 +200,7 @@ export async function endShift(): Promise<Shift | null> {
 
     if (error) {
       console.error('endShift update error:', error)
-      throw error
+      throw new Error(error.message)
     }
 
     return data as Shift

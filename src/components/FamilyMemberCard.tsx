@@ -1,4 +1,6 @@
-import { Alert, Pressable, StyleSheet, Text, View } from 'react-native'
+import { useState } from 'react'
+import { Modal, Pressable, StyleSheet, Text, View } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 import { useAuth } from '@/src/contexts/AuthContext'
 import type { FamilyMember, MemberRole } from '@/src/types/family'
@@ -23,36 +25,19 @@ export function FamilyMemberCard({
   onRemove
 }: FamilyMemberCardProps) {
   const { session } = useAuth()
+  const insets = useSafeAreaInsets()
   const isCurrentUser = session?.user.id === member.user_id
   const canManage = isAdmin && !isCurrentUser
 
-  function openActionMenu() {
-    const options: {
-      text: string
-      style?: 'destructive' | 'cancel'
-      onPress?: () => void
-    }[] = []
+  const [isMenuVisible, setIsMenuVisible] = useState(false)
 
-    if (member.role === 'family') {
-      options.push({
-        text: 'Hacer administrador',
-        onPress: () => onChangeRole?.(member, 'admin')
-      })
-    } else if (member.role === 'admin') {
-      options.push({
-        text: 'Hacer familiar',
-        onPress: () => onChangeRole?.(member, 'family')
-      })
-    }
+  function closeMenu() {
+    setIsMenuVisible(false)
+  }
 
-    options.push({
-      text: 'Eliminar',
-      style: 'destructive',
-      onPress: () => onRemove?.(member)
-    })
-    options.push({ text: 'Cancelar', style: 'cancel' })
-
-    Alert.alert(member.full_name, 'Elige una acción', options)
+  function runAction(action?: () => void) {
+    setIsMenuVisible(false)
+    action?.()
   }
 
   return (
@@ -84,10 +69,103 @@ export function FamilyMemberCard({
             styles.menuButton,
             pressed && styles.menuButtonPressed
           ]}
-          onPress={openActionMenu}
+          onPress={() => setIsMenuVisible(true)}
         >
           <Text style={styles.menuButtonText}>•••</Text>
         </Pressable>
+      ) : null}
+
+      {canManage ? (
+        <Modal
+          transparent
+          visible={isMenuVisible}
+          animationType="fade"
+          onRequestClose={closeMenu}
+        >
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Cerrar menú"
+            style={styles.sheetOverlay}
+            onPress={closeMenu}
+          />
+
+          <View
+            style={[
+              styles.sheetWrapper,
+              { paddingBottom: insets.bottom + 12 }
+            ]}
+          >
+            <View style={styles.sheetGroup}>
+              <Text style={styles.sheetTitle}>{member.full_name}</Text>
+
+              {member.role === 'family' ? (
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={`Convertir en administrador a ${member.full_name}`}
+                  style={({ pressed }) => [
+                    styles.sheetOption,
+                    pressed && styles.sheetOptionPressed
+                  ]}
+                  onPress={() =>
+                    runAction(() => onChangeRole?.(member, 'admin'))
+                  }
+                >
+                  <Text style={styles.sheetOptionText}>
+                    Convertir en administrador
+                  </Text>
+                </Pressable>
+              ) : null}
+
+              {member.role === 'admin' ? (
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={`Eliminar rol de administrador a ${member.full_name}`}
+                  style={({ pressed }) => [
+                    styles.sheetOption,
+                    pressed && styles.sheetOptionPressed
+                  ]}
+                  onPress={() =>
+                    runAction(() => onChangeRole?.(member, 'family'))
+                  }
+                >
+                  <Text style={styles.sheetOptionText}>
+                    Eliminar rol de administrador
+                  </Text>
+                </Pressable>
+              ) : null}
+
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={`Eliminar a ${member.full_name}`}
+                style={({ pressed }) => [
+                  styles.sheetOption,
+                  pressed && styles.sheetOptionPressed
+                ]}
+                onPress={() => runAction(() => onRemove?.(member))}
+              >
+                <Text
+                  style={[styles.sheetOptionText, styles.sheetOptionDestructive]}
+                >
+                  Eliminar
+                </Text>
+              </Pressable>
+            </View>
+
+            <View style={styles.sheetGroup}>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="Cancelar"
+                style={({ pressed }) => [
+                  styles.sheetCancelOption,
+                  pressed && styles.sheetOptionPressed
+                ]}
+                onPress={closeMenu}
+              >
+                <Text style={styles.sheetCancelText}>Cancelar</Text>
+              </Pressable>
+            </View>
+          </View>
+        </Modal>
       ) : null}
     </View>
   )
@@ -162,5 +240,57 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#6B7280',
     letterSpacing: 1
+  },
+  // Action sheet
+  sheetOverlay: {
+    flex: 1,
+    backgroundColor: '#00000055'
+  },
+  sheetWrapper: {
+    position: 'absolute',
+    left: 12,
+    right: 12,
+    bottom: 0,
+    gap: 8
+  },
+  sheetGroup: {
+    borderRadius: 14,
+    backgroundColor: '#FFFFFF',
+    overflow: 'hidden'
+  },
+  sheetTitle: {
+    textAlign: 'center',
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#6B7280',
+    paddingVertical: 12,
+    paddingHorizontal: 16
+  },
+  sheetOption: {
+    paddingVertical: 16,
+    alignItems: 'center',
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: '#E5E7EB'
+  },
+  sheetOptionPressed: {
+    backgroundColor: '#F3F4F6'
+  },
+  sheetOptionText: {
+    fontSize: 17,
+    fontWeight: '500',
+    color: '#111111'
+  },
+  sheetOptionDestructive: {
+    color: '#DC2626',
+    fontWeight: '600'
+  },
+  sheetCancelOption: {
+    paddingVertical: 16,
+    alignItems: 'center'
+  },
+  sheetCancelText: {
+    fontSize: 17,
+    fontWeight: '700',
+    color: '#111111'
   }
 })

@@ -19,7 +19,7 @@ export async function getCurrentFamily(
     .maybeSingle<FamilyMembership>()
 
   if (membershipError) {
-    throw membershipError
+    throw new Error(membershipError.message)
   }
 
   if (!membership) {
@@ -33,7 +33,7 @@ export async function getCurrentFamily(
     .single<Family>()
 
   if (familyError) {
-    throw familyError
+    throw new Error(familyError.message)
   }
 
   return {
@@ -48,7 +48,7 @@ export async function createFamily(name: string): Promise<Family> {
   })
 
   if (error) {
-    throw error
+    throw new Error(error.message)
   }
 
   return data as Family
@@ -62,7 +62,7 @@ export async function createFamilyInvite(
   })
 
   if (error) {
-    throw error
+    throw new Error(error.message)
   }
 
   return data as FamilyInvite
@@ -76,7 +76,7 @@ export async function joinFamilyByCode(
   })
 
   if (error) {
-    throw error
+    throw new Error(error.message)
   }
 
   return data as FamilyMembership
@@ -86,7 +86,7 @@ export async function getFamilyMembers(): Promise<FamilyMember[]> {
   const { data, error } = await supabase.rpc('get_current_family_members')
 
   if (error) {
-    throw error
+    throw new Error(error.message)
   }
 
   return (data ?? []) as FamilyMember[]
@@ -98,7 +98,7 @@ export async function removeFamilyMember(userId: string): Promise<void> {
   })
 
   if (error) {
-    throw error
+    throw new Error(error.message)
   }
 }
 
@@ -112,7 +112,7 @@ export async function updateMemberRole(
   })
 
   if (error) {
-    throw error
+    throw new Error(error.message)
   }
 
   return data as FamilyMembership
