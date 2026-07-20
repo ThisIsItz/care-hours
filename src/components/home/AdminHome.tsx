@@ -77,7 +77,7 @@ export function AdminHome({
               <Text style={styles.historialButtonText}>Historial</Text>
             </Pressable>
           </View>
-          <ActiveWorkersSection />
+          <ActiveWorkersSection isAdmin />
         </View>
 
         <View style={styles.section}>

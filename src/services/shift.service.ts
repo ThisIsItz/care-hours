@@ -146,6 +146,18 @@ export async function adminDeleteShift(shiftId: string): Promise<void> {
   if (error) throw error
 }
 
+export async function adminStopShift(
+  shiftId: string,
+  reason: string | null
+): Promise<Shift> {
+  const { data, error } = await supabase.rpc('admin_stop_shift', {
+    p_shift_id: shiftId,
+    p_reason: reason ?? null
+  })
+  if (error) throw error
+  return data as Shift
+}
+
 export async function endShift(): Promise<Shift | null> {
   const userId = await getCurrentUserId()
 

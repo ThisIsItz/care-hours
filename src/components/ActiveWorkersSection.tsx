@@ -1,7 +1,15 @@
 import { useEffect, useState } from 'react'
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native'
+import {
+  ActivityIndicator,
+  Alert,
+  Pressable,
+  StyleSheet,
+  Text,
+  View
+} from 'react-native'
 
 import { useActiveShifts } from '@/src/hooks/useActiveShifts'
+import { useAdminStopShift } from '@/src/hooks/useAdminStopShift'
 import { useFamilyMembers } from '@/src/hooks/useFamilyMembers'
 
 function formatTime(date: string) {
@@ -24,9 +32,16 @@ function formatDuration(startedAt: string, now: number) {
   return `${hours} h ${minutes.toString().padStart(2, '0')} min`
 }
 
-export function ActiveWorkersSection() {
+type ActiveWorkersSectionProps = {
+  isAdmin?: boolean
+}
+
+export function ActiveWorkersSection({
+  isAdmin = false
+}: ActiveWorkersSectionProps) {
   const { data: shifts, isLoading, error } = useActiveShifts()
   const { data: members } = useFamilyMembers()
+  const stopShiftMutation = useAdminStopShift()
 
   const [now, setNow] = useState(Date.now())
 
@@ -41,6 +56,30 @@ export function ActiveWorkersSection() {
 
     return () => clearInterval(intervalId)
   }, [shifts])
+
+  function handleStopShift(shiftId: string, workerName: string) {
+    Alert.alert(
+      'Terminar turno',
+      `¿Seguro que quieres terminar el turno de ${workerName}? Se registrará como finalizado ahora mismo. Esta acción no se puede deshacer.`,
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Terminar turno',
+          style: 'destructive',
+          onPress: () => {
+            stopShiftMutation.mutate(
+              { shiftId, reason: null },
+              {
+                onError: () => {
+                  Alert.alert('Error', 'No se pudo terminar el turno.')
+                }
+              }
+            )
+          }
+        }
+      ]
+    )
+  }
 
   if (isLoading) {
     return (
@@ -100,6 +139,23 @@ export function ActiveWorkersSection() {
                 </Text>
               </View>
             </View>
+
+            {isAdmin ? (
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={`Terminar turno de ${workerName}`}
+                accessibilityState={{ disabled: stopShiftMutation.isPending }}
+                disabled={stopShiftMutation.isPending}
+                style={({ pressed }) => [
+                  styles.stopButton,
+                  pressed && styles.stopButtonPressed,
+                  stopShiftMutation.isPending && styles.stopButtonDisabled
+                ]}
+                onPress={() => handleStopShift(shift.id, workerName)}
+              >
+                <Text style={styles.stopButtonText}>Terminar turno</Text>
+              </Pressable>
+            ) : null}
           </View>
         )
       })}
@@ -191,5 +247,27 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     color: '#14532D',
     letterSpacing: -0.3
+  },
+  stopButton: {
+    minHeight: 48,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginHorizontal: 18,
+    marginBottom: 18,
+    borderRadius: 12,
+    borderWidth: 1.5,
+    borderColor: '#FCA5A5',
+    backgroundColor: '#FFFFFF'
+  },
+  stopButtonPressed: {
+    backgroundColor: '#FEF2F2'
+  },
+  stopButtonDisabled: {
+    opacity: 0.5
+  },
+  stopButtonText: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#B91C1C'
   }
 })
