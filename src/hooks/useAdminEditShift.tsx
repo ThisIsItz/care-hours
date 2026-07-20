@@ -1,6 +1,8 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 import { adminEditShift } from '@/src/services/shift.service'
+import { activeShiftsBaseKey } from '@/src/hooks/useActiveShifts'
+import { shiftHistoryQueryKey } from '@/src/hooks/useShiftHistory'
 
 export function useAdminEditShift() {
   const queryClient = useQueryClient()
@@ -17,8 +19,8 @@ export function useAdminEditShift() {
       reason: string | null
     }) => adminEditShift(shiftId, startedAt, endedAt, reason),
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ['shift-history'] })
-      void queryClient.invalidateQueries({ queryKey: ['active-shifts'] })
+      void queryClient.invalidateQueries({ queryKey: shiftHistoryQueryKey })
+      void queryClient.invalidateQueries({ queryKey: activeShiftsBaseKey })
     }
   })
 }

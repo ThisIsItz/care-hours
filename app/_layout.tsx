@@ -3,7 +3,16 @@ import { ActivityIndicator, StyleSheet, View } from 'react-native'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 
 import { AuthProvider, useAuth } from '@/src/contexts/AuthContext'
+import { useRealtimeShifts } from '@/src/hooks/useRealtimeShifts'
 import { QueryProvider } from '@/src/providers/QueryProvider'
+
+// Mounted only while a session exists, and only once for the whole app —
+// keeps the shifts realtime subscription alive across every authenticated
+// screen without re-subscribing on navigation.
+function AuthenticatedRealtimeSync() {
+  useRealtimeShifts()
+  return null
+}
 
 function RootNavigator() {
   const { session, isLoading } = useAuth()
@@ -17,59 +26,62 @@ function RootNavigator() {
   }
 
   return (
-    <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Protected guard={!session}>
-        <Stack.Screen name="index" />
-        <Stack.Screen name="sign-in" />
-        <Stack.Screen name="sign-up" />
-      </Stack.Protected>
+    <>
+      {session ? <AuthenticatedRealtimeSync /> : null}
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Protected guard={!session}>
+          <Stack.Screen name="index" />
+          <Stack.Screen name="sign-in" />
+          <Stack.Screen name="sign-up" />
+        </Stack.Protected>
 
-      <Stack.Protected guard={Boolean(session)}>
-        <Stack.Screen name="home" />
-        <Stack.Screen
-          name="create-family"
-          options={{
-            headerShown: false,
-            presentation: 'card'
-          }}
-        />
-        <Stack.Screen
-          name="invite-member"
-          options={{
-            headerShown: true,
-            title: 'Invitar persona'
-          }}
-        />
-        <Stack.Screen
-          name="join-family"
-          options={{
-            headerShown: true,
-            title: 'Unirme a un grupo'
-          }}
-        />
-        <Stack.Screen
-          name="shift-history"
-          options={{
-            headerShown: true,
-            title: 'Historial'
-          }}
-        />
-        <Stack.Screen
-          name="edit-shift"
-          options={{
-            headerShown: true,
-            title: 'Editar turno'
-          }}
-        />
-        <Stack.Screen
-          name="add-shift"
-          options={{
-            headerShown: true,
-            title: 'Añadir turno'
-          }}
-        />
-      </Stack.Protected>
-    </Stack>
+        <Stack.Protected guard={Boolean(session)}>
+          <Stack.Screen name="home" />
+          <Stack.Screen
+            name="create-family"
+            options={{
+              headerShown: false,
+              presentation: 'card'
+            }}
+          />
+          <Stack.Screen
+            name="invite-member"
+            options={{
+              headerShown: true,
+              title: 'Invitar persona'
+            }}
+          />
+          <Stack.Screen
+            name="join-family"
+            options={{
+              headerShown: true,
+              title: 'Unirme a un grupo'
+            }}
+          />
+          <Stack.Screen
+            name="shift-history"
+            options={{
+              headerShown: true,
+              title: 'Historial'
+            }}
+          />
+          <Stack.Screen
+            name="edit-shift"
+            options={{
+              headerShown: true,
+              title: 'Editar turno'
+            }}
+          />
+          <Stack.Screen
+            name="add-shift"
+            options={{
+              headerShown: true,
+              title: 'Añadir turno'
+            }}
+          />
+        </Stack.Protected>
+      </Stack>
+    </>
   )
 }
 
