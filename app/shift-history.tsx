@@ -1,8 +1,8 @@
 import DateTimePicker from '@react-native-community/datetimepicker'
 import * as FileSystem from 'expo-file-system/legacy'
 import * as Print from 'expo-print'
-import * as Sharing from 'expo-sharing'
 import { router } from 'expo-router'
+import * as Sharing from 'expo-sharing'
 import { useMemo, useState } from 'react'
 import {
   ActivityIndicator,
@@ -17,6 +17,7 @@ import {
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
+import { useAdminDeleteShift } from '@/src/hooks/useAdminDeleteShift'
 import { useCurrentFamily } from '@/src/hooks/useCurrentFamily'
 import { useFamilyMembers } from '@/src/hooks/useFamilyMembers'
 import { useShiftHistory } from '@/src/hooks/useShiftHistory'
@@ -54,11 +55,26 @@ function formatDateLabel(date: Date) {
 type ShiftRowProps = {
   shift: Shift
   workerName: string
+  editorName: string
   isAdmin: boolean
+  canDelete: boolean
+  showEditNotice: boolean
+  showEditDetails: boolean
   onEdit: () => void
+  onDelete: () => void
 }
 
-function ShiftRow({ shift, workerName, isAdmin, onEdit }: ShiftRowProps) {
+function ShiftRow({
+  shift,
+  workerName,
+  editorName,
+  isAdmin,
+  canDelete,
+  showEditNotice,
+  showEditDetails,
+  onEdit,
+  onDelete
+}: ShiftRowProps) {
   return (
     <View style={styles.row}>
       <View style={styles.rowLeft}>
@@ -68,23 +84,57 @@ function ShiftRow({ shift, workerName, isAdmin, onEdit }: ShiftRowProps) {
           <Text style={styles.timeSeparator}>→</Text>
           <Text style={styles.time}>{formatTime(shift.ended_at!)}</Text>
         </View>
+        {showEditNotice ? (
+          <View style={styles.editDetailsCard}>
+            {showEditDetails ? (
+              <>
+                <Text style={styles.editDetailsTitle}>Turno modificado</Text>
+                <Text style={styles.editDetailsText}>
+                  {shift.edit_reason || 'Sin motivo indicado'}
+                </Text>
+                <Text style={styles.editDetailsMeta}>
+                  Editado por: {editorName}
+                </Text>
+              </>
+            ) : (
+              <Text style={styles.editDetailsTitle}>Turno corregido</Text>
+            )}
+          </View>
+        ) : null}
       </View>
       <View style={styles.rowRight}>
         <Text style={styles.duration}>
           {formatDuration(shift.started_at, shift.ended_at!)}
         </Text>
-        {isAdmin ? (
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={`Editar turno de ${workerName}`}
-            style={({ pressed }) => [
-              styles.editButton,
-              pressed && styles.editButtonPressed
-            ]}
-            onPress={onEdit}
-          >
-            <Text style={styles.editButtonText}>Editar</Text>
-          </Pressable>
+        {isAdmin || canDelete ? (
+          <View style={styles.rowActions}>
+            {isAdmin ? (
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={`Editar turno de ${workerName}`}
+                style={({ pressed }) => [
+                  styles.editButton,
+                  pressed && styles.editButtonPressed
+                ]}
+                onPress={onEdit}
+              >
+                <Text style={styles.editButtonText}>Editar</Text>
+              </Pressable>
+            ) : null}
+            {canDelete ? (
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={`Eliminar turno de ${workerName}`}
+                style={({ pressed }) => [
+                  styles.deleteButton,
+                  pressed && styles.deleteButtonPressed
+                ]}
+                onPress={onDelete}
+              >
+                <Text style={styles.deleteButtonText}>Eliminar</Text>
+              </Pressable>
+            ) : null}
+          </View>
         ) : null}
       </View>
     </View>
@@ -110,6 +160,7 @@ export default function ShiftHistoryScreen() {
   const { data: currentFamily } = useCurrentFamily()
   const canExport = currentFamily?.membership.role !== 'worker'
   const isAdmin = currentFamily?.membership.role === 'admin'
+  const deleteShiftMutation = useAdminDeleteShift()
 
   const [startDate, setStartDate] = useState<Date>(startOfCurrentMonth)
   const [endDate, setEndDate] = useState<Date>(endOfToday)
@@ -158,6 +209,30 @@ export default function ShiftHistoryScreen() {
       setEndDate(d)
     }
     setActivePicker(null)
+  }
+
+  function handleDeleteShift(shiftId: string, workerName: string) {
+    Alert.alert(
+      'Eliminar turno',
+      `¿Seguro que quieres eliminar el turno de ${workerName}? Esta acción no se puede deshacer.`,
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Eliminar',
+          style: 'destructive',
+          onPress: () => {
+            deleteShiftMutation.mutate(
+              { shiftId },
+              {
+                onError: () => {
+                  Alert.alert('Error', 'No se pudo eliminar el turno.')
+                }
+              }
+            )
+          }
+        }
+      ]
+    )
   }
 
   function buildCSV() {
@@ -298,7 +373,9 @@ export default function ShiftHistoryScreen() {
             ]}
             onPress={() => openPicker('start')}
           >
-            <Text style={styles.dateButtonText}>{formatDateLabel(startDate)}</Text>
+            <Text style={styles.dateButtonText}>
+              {formatDateLabel(startDate)}
+            </Text>
             <Text style={styles.dateButtonHint}>Toca para cambiar</Text>
           </Pressable>
         </View>
@@ -314,7 +391,9 @@ export default function ShiftHistoryScreen() {
             ]}
             onPress={() => openPicker('end')}
           >
-            <Text style={styles.dateButtonText}>{formatDateLabel(endDate)}</Text>
+            <Text style={styles.dateButtonText}>
+              {formatDateLabel(endDate)}
+            </Text>
             <Text style={styles.dateButtonHint}>Toca para cambiar</Text>
           </Pressable>
         </View>
@@ -379,10 +458,18 @@ export default function ShiftHistoryScreen() {
           />
           <View style={styles.pickerSheet}>
             <View style={styles.pickerToolbar}>
-              <Pressable accessibilityRole="button" hitSlop={16} onPress={() => setActivePicker(null)}>
+              <Pressable
+                accessibilityRole="button"
+                hitSlop={16}
+                onPress={() => setActivePicker(null)}
+              >
                 <Text style={styles.pickerCancel}>Cancelar</Text>
               </Pressable>
-              <Pressable accessibilityRole="button" hitSlop={16} onPress={confirmIOSPicker}>
+              <Pressable
+                accessibilityRole="button"
+                hitSlop={16}
+                onPress={confirmIOSPicker}
+              >
                 <Text style={styles.pickerDone}>Listo</Text>
               </Pressable>
             </View>
@@ -434,12 +521,24 @@ export default function ShiftHistoryScreen() {
         renderItem={({ item }) => {
           const member = members?.find((m) => m.user_id === item.worker_id)
           const workerName = member?.full_name ?? 'Trabajador'
+          const editorName =
+            members?.find((m) => m.user_id === item.edited_by)?.full_name ??
+            'Administrador'
           const isCompleted = Boolean(item.ended_at)
+          const showEditNotice = Boolean(
+            item.edited_at || item.edit_reason || item.edited_by
+          )
+          const showEditDetails =
+            showEditNotice && currentFamily?.membership.role !== 'worker'
           return (
             <ShiftRow
               shift={item}
               workerName={workerName}
+              editorName={editorName}
               isAdmin={isAdmin && isCompleted}
+              canDelete={isAdmin}
+              showEditNotice={showEditNotice}
+              showEditDetails={showEditDetails}
               onEdit={() =>
                 router.push({
                   pathname: '/edit-shift',
@@ -451,6 +550,7 @@ export default function ShiftHistoryScreen() {
                   }
                 })
               }
+              onDelete={() => handleDeleteShift(item.id, workerName)}
             />
           )
         }}
@@ -592,6 +692,10 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#111111'
   },
+  rowActions: {
+    flexDirection: 'row',
+    gap: 8
+  },
   editButton: {
     height: 36,
     paddingHorizontal: 12,
@@ -608,6 +712,46 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '600',
     color: '#374151'
+  },
+  deleteButton: {
+    height: 36,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    borderWidth: 1.5,
+    borderColor: '#FCA5A5',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  deleteButtonPressed: {
+    backgroundColor: '#FEF2F2'
+  },
+  deleteButtonText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#B91C1C'
+  },
+  editDetailsCard: {
+    marginTop: 10,
+    padding: 10,
+    borderRadius: 10,
+    backgroundColor: '#FFF7ED',
+    borderWidth: 1,
+    borderColor: '#FED7AA'
+  },
+  editDetailsTitle: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#9A2C00'
+  },
+  editDetailsText: {
+    fontSize: 13,
+    color: '#7C2D12',
+    marginTop: 4
+  },
+  editDetailsMeta: {
+    fontSize: 13,
+    color: '#9A2C00',
+    marginTop: 4
   },
   separator: {
     height: 1,
