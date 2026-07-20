@@ -52,6 +52,12 @@ function formatDateLabel(date: Date) {
   }).format(date)
 }
 
+function getEditNoticeTitle(shift: Shift) {
+  if (shift.admin_action === 'created') return 'Turno añadido'
+  if (shift.admin_action === 'stopped') return 'Turno terminado'
+  return 'Turno modificado'
+}
+
 type ShiftRowProps = {
   shift: Shift
   workerName: string
@@ -92,9 +98,9 @@ function ShiftRow({
 
       {showEditNotice ? (
         <View style={styles.editDetailsCard}>
+          <Text style={styles.editDetailsTitle}>{getEditNoticeTitle(shift)}</Text>
           {showEditDetails ? (
             <>
-              <Text style={styles.editDetailsTitle}>Turno modificado</Text>
               <Text style={styles.editDetailsText}>
                 {shift.edit_reason || 'Sin motivo indicado'}
               </Text>
@@ -102,9 +108,7 @@ function ShiftRow({
                 Editado por: {editorName}
               </Text>
             </>
-          ) : (
-            <Text style={styles.editDetailsTitle}>Turno corregido</Text>
-          )}
+          ) : null}
         </View>
       ) : null}
 
