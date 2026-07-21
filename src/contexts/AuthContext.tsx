@@ -9,6 +9,7 @@ import {
 } from 'react'
 
 import { supabase } from '../lib/supabase'
+import { registerForPushNotificationsAsync } from '../services/notifications.service'
 
 type AuthContextValue = {
   session: Session | null
@@ -41,9 +42,17 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
     const {
       data: { subscription }
-    } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+    } = supabase.auth.onAuthStateChange((event, nextSession) => {
       setSession(nextSession)
       setIsLoading(false)
+
+      // Only prompt for notification permission on a genuine interactive
+      // sign-in (covers sign-up too, since Supabase fires SIGNED_IN once a
+      // session exists) — never on INITIAL_SESSION, which fires when a
+      // persisted session is silently restored on app launch.
+      if (event === 'SIGNED_IN') {
+        void registerForPushNotificationsAsync()
+      }
     })
 
     return () => {

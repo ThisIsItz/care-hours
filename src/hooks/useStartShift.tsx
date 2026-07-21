@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
+import { registerForPushNotificationsAsync } from '@/src/services/notifications.service'
 import { startShift } from '@/src/services/shift.service'
 
 import { activeShiftsBaseKey } from './useActiveShifts'
@@ -21,6 +22,12 @@ export function useStartShift() {
       await queryClient.invalidateQueries({
         queryKey: activeShiftsBaseKey
       })
+
+      // A worker with an active shift is exactly when notifications become
+      // useful (an admin might finalize it, edit it, etc.) — ask here too,
+      // in case they never got prompted at sign-in (e.g. account predates
+      // this feature). No-ops if already granted/denied.
+      void registerForPushNotificationsAsync()
     }
   })
 }

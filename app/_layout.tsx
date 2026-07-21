@@ -4,6 +4,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context'
 
 import { AuthProvider, useAuth } from '@/src/contexts/AuthContext'
 import { useRealtimeShifts } from '@/src/hooks/useRealtimeShifts'
+import { useRegisterPushNotifications } from '@/src/hooks/useRegisterPushNotifications'
 import { QueryProvider } from '@/src/providers/QueryProvider'
 
 // Mounted only while a session exists, and only once for the whole app —
@@ -11,6 +12,14 @@ import { QueryProvider } from '@/src/providers/QueryProvider'
 // screen without re-subscribing on navigation.
 function AuthenticatedRealtimeSync() {
   useRealtimeShifts()
+  return null
+}
+
+// Keeps listening for native push-token rotation for the life of the
+// session (the initial permission prompt + registration happens on
+// SIGNED_IN in AuthContext, and again on a worker's first shift start).
+function AuthenticatedPushSync() {
+  useRegisterPushNotifications()
   return null
 }
 
@@ -27,7 +36,12 @@ function RootNavigator() {
 
   return (
     <>
-      {session ? <AuthenticatedRealtimeSync /> : null}
+      {session ? (
+        <>
+          <AuthenticatedRealtimeSync />
+          <AuthenticatedPushSync />
+        </>
+      ) : null}
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Protected guard={!session}>
           <Stack.Screen name="index" />
