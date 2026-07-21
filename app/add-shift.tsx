@@ -102,7 +102,7 @@ export default function AddShiftScreen() {
 
   function handleSubmit() {
     if (!workerId) {
-      setValidationError('Selecciona una cuidadora.')
+      setValidationError('Selecciona un trabajador.')
       return
     }
 
@@ -197,12 +197,12 @@ export default function AddShiftScreen() {
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.fieldGroup}>
-          <Text style={styles.fieldLabel}>Cuidadora</Text>
+          <Text style={styles.fieldLabel}>Trabajador</Text>
           {areMembersLoading ? (
             <ActivityIndicator />
           ) : workers.length === 0 ? (
             <Text style={styles.emptyText}>
-              No hay cuidadoras en tu familia todavía.
+              No hay trabajadores en tu familia todavía.
             </Text>
           ) : (
             <View style={styles.workerList}>

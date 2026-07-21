@@ -92,9 +92,7 @@ export default function SettingsScreen() {
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Legal</Text>
-          <View style={styles.legalCard}>
-            <LegalLinksRow />
-          </View>
+          <LegalLinksRow align="left" />
         </View>
 
         <View style={styles.section}>
@@ -172,12 +170,6 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: '700',
     color: '#111111'
-  },
-  legalCard: {
-    padding: 18,
-    borderRadius: 16,
-    borderWidth: 1.5,
-    borderColor: '#E5E7EB'
   },
   signOutButton: {
     minHeight: 60,

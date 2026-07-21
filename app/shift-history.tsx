@@ -243,7 +243,7 @@ export default function ShiftHistoryScreen() {
   }
 
   function buildCSV() {
-    const header = 'Cuidador,Fecha,Hora inicio,Hora fin,Duración'
+    const header = 'Trabajador,Fecha,Hora inicio,Hora fin,Duración'
     const rows = filteredShifts.map((shift) => {
       const member = members?.find((m) => m.user_id === shift.worker_id)
       const name = (member?.full_name ?? 'Trabajador').replace(/"/g, '""')
@@ -294,7 +294,7 @@ export default function ShiftHistoryScreen() {
   <table>
     <thead>
       <tr>
-        <th>Cuidador</th><th>Fecha</th><th>Hora inicio</th><th>Hora fin</th><th>Duración</th>
+        <th>Trabajador</th><th>Fecha</th><th>Hora inicio</th><th>Hora fin</th><th>Duración</th>
       </tr>
     </thead>
     <tbody>${rowsHtml}</tbody>

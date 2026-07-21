@@ -71,7 +71,7 @@ export default function InviteMemberScreen() {
         <Pressable
           accessibilityRole="radio"
           accessibilityState={{ checked: selectedRole === 'worker' }}
-          accessibilityLabel="Cuidador"
+          accessibilityLabel="Trabajador"
           accessibilityHint="Podrá fichar entrada y salida"
           style={[
             styles.roleButton,
@@ -79,7 +79,7 @@ export default function InviteMemberScreen() {
           ]}
           onPress={() => { setSelectedRole('worker'); setGeneratedCode(null) }}
         >
-          <Text style={styles.roleTitle}>Cuidador</Text>
+          <Text style={styles.roleTitle}>Trabajador</Text>
 
           <Text style={styles.roleDescription}>
             Podrá fichar entrada y salida.
