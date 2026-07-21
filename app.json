@@ -1,21 +1,16 @@
 {
   "expo": {
-    "name": "care-hours",
-    "slug": "care-hours",
+    "name": "FichApp",
+    "slug": "fichapp",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "carehours",
+    "scheme": "fichapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
-    "ios": {
-      "supportsTablet": true,
-      "infoPlist": {
-        "UIFileSharingEnabled": true,
-        "LSSupportsOpeningDocumentsInPlace": true
-      }
-    },
     "android": {
+      "package": "dev.itziarurbieta.fichapp",
+      "versionCode": 1,
       "adaptiveIcon": {
         "backgroundColor": "#111111",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
@@ -54,6 +49,12 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "3748794c-0ae9-4b61-9efe-2498bb376ec1"
+      }
     }
   }
 }
