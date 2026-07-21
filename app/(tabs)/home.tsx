@@ -1,6 +1,5 @@
 import {
   ActivityIndicator,
-  Alert,
   Pressable,
   StyleSheet,
   Text,
@@ -13,8 +12,6 @@ import { FamilyHome } from '@/src/components/home/FamilyHome'
 import { WorkerHome } from '@/src/components/home/WorkerHome'
 import { useCurrentFamily } from '@/src/hooks/useCurrentFamily'
 import { useFamilyMembers } from '@/src/hooks/useFamilyMembers'
-import { supabase } from '@/src/lib/supabase'
-import { useQueryClient } from '@tanstack/react-query'
 import { router } from 'expo-router'
 
 export default function HomeScreen() {
@@ -24,20 +21,6 @@ export default function HomeScreen() {
     isLoading: areMembersLoading,
     error: membersError
   } = useFamilyMembers(Boolean(currentFamily))
-
-  const queryClient = useQueryClient()
-
-  async function handleSignOut() {
-    const { error } = await supabase.auth.signOut()
-
-    if (error) {
-      Alert.alert('No se pudo cerrar sesión', error.message)
-      return
-    }
-
-    queryClient.clear()
-    router.replace('/')
-  }
 
   if (isLoading) {
     return (
@@ -88,14 +71,6 @@ export default function HomeScreen() {
           >
             <Text style={styles.secondaryButtonText}>Unirme a un grupo</Text>
           </Pressable>
-
-          <Pressable
-            accessibilityRole="button"
-            style={styles.secondaryButton}
-            onPress={() => void handleSignOut()}
-          >
-            <Text style={styles.secondaryButtonText}>Cerrar sesión</Text>
-          </Pressable>
         </View>
       </SafeAreaView>
     )
@@ -109,18 +84,12 @@ export default function HomeScreen() {
         areMembersLoading={areMembersLoading}
         membersError={membersError}
         onInvitePress={() => router.navigate('/invite-member')}
-        onSignOut={() => void handleSignOut()}
       />
     )
   }
 
   if (currentFamily.membership.role === 'worker') {
-    return (
-      <WorkerHome
-        currentFamily={currentFamily}
-        onSignOut={() => void handleSignOut()}
-      />
-    )
+    return <WorkerHome currentFamily={currentFamily} />
   }
 
   return (
@@ -129,7 +98,6 @@ export default function HomeScreen() {
       members={members}
       areMembersLoading={areMembersLoading}
       membersError={membersError}
-      onSignOut={() => void handleSignOut()}
     />
   )
 }

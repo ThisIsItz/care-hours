@@ -1,5 +1,5 @@
 import { router } from 'expo-router'
-import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 import { WorkerShiftCard } from '@/src/components/WorkerShiftCard'
@@ -7,17 +7,9 @@ import type { CurrentFamily } from '@/src/types/family'
 
 type WorkerHomeProps = {
   currentFamily: CurrentFamily
-  onSignOut: () => void
 }
 
-export function WorkerHome({ currentFamily, onSignOut }: WorkerHomeProps) {
-  function confirmSignOut() {
-    Alert.alert('Cerrar sesión', '¿Seguro que quieres salir?', [
-      { text: 'Cancelar', style: 'cancel' },
-      { text: 'Cerrar sesión', style: 'destructive', onPress: onSignOut }
-    ])
-  }
-
+export function WorkerHome({ currentFamily }: WorkerHomeProps) {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView
@@ -47,20 +39,6 @@ export function WorkerHome({ currentFamily, onSignOut }: WorkerHomeProps) {
           <WorkerShiftCard />
         </View>
       </ScrollView>
-
-      <View style={styles.footer}>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Cerrar sesión"
-          style={({ pressed }) => [
-            styles.signOutButton,
-            pressed && styles.signOutButtonPressed
-          ]}
-          onPress={confirmSignOut}
-        >
-          <Text style={styles.signOutText}>Cerrar sesión</Text>
-        </Pressable>
-      </View>
     </SafeAreaView>
   )
 }
@@ -113,28 +91,6 @@ const styles = StyleSheet.create({
   },
   historialButtonText: {
     fontSize: 15,
-    fontWeight: '600',
-    color: '#111111'
-  },
-  footer: {
-    padding: 24,
-    paddingTop: 12,
-    borderTopWidth: 1,
-    borderTopColor: '#E5E7EB'
-  },
-  signOutButton: {
-    minHeight: 60,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 16,
-    borderWidth: 1.5,
-    borderColor: '#D1D5DB'
-  },
-  signOutButtonPressed: {
-    backgroundColor: '#F9FAFB'
-  },
-  signOutText: {
-    fontSize: 19,
     fontWeight: '600',
     color: '#111111'
   }

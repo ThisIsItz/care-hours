@@ -36,7 +36,7 @@ function RootNavigator() {
         </Stack.Protected>
 
         <Stack.Protected guard={Boolean(session)}>
-          <Stack.Screen name="home" />
+          <Stack.Screen name="(tabs)" />
           <Stack.Screen
             name="create-family"
             options={{
