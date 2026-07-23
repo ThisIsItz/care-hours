@@ -9,7 +9,7 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "android": {
-      "package": "dev.itziarurbieta.fichapp",
+      "package": "dev.itziar.fichapp",
       "versionCode": 1,
       "adaptiveIcon": {
         "backgroundColor": "#111111",
